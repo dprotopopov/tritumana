@@ -1,0 +1,11 @@
+Конфигурационный файл xml http://php.net/manual/ru/domxpath.query.php
+Разбор XLS https://phpexcel.codeplex.com
+Разбор HTML http://php.net/manual/ru/class.domxpath.php
+Очередь загрузки картинок http://www.mysql.com
+загрузка изображений http://php.net/manual/ru/book.curl.php
+Обработка очередей загрузки картинок по cron
+объединение двух результатов парсинга XLS и сайта http://www.mysql.com
+добавление водяного знака http://www.php.net/manual/en/book.image.php
+составление Xpath для загружаемых полей с сайта (до 40шт)
+Загрузка страниц с помощью спайдера на подобии https://github.com/mvdbos/php-spider
+сохранение результатов в CSV 

@@ -1,0 +1,283 @@
+<?php
+//////////////////////////////////////////////////////////////////////////////
+// Разрабочик dmitry@protopopov.ru
+
+/** Include PHPExcel */
+require_once dirname(__FILE__) . '/PHPExcel_1.8.0_doc/Classes/PHPExcel.php';
+
+require_once( dirname(__FILE__) . '/configuration.php' );
+require_once( dirname(__FILE__) . '/database.php' );
+require_once( dirname(__FILE__) . '/application.php' );
+require_once( dirname(__FILE__) . '/functions.php' );
+require_once( dirname(__FILE__) . '/defines.php' );
+
+
+class JApp {
+	private $config;
+	private $db;
+	
+	public function __construct() {
+		$this->config = new JConfig();
+		$this->db = new JDatabase();
+	}
+	
+	public function rebuild_database(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$xlscolumns = array(); foreach($this->config->xlsfields as $field=>$values) $xlscolumns[] = $field . ' ' . $values[0];
+		$urlcolumns = array(); foreach($this->config->urlfields as $field=>$values) $urlcolumns[] = $field . ' ' . $values[0];
+		$this->db->connect();
+		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_XLS);
+		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_URL);
+		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_PAGE);
+		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_IMAGE);
+		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', array_keys($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', array_values($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_URL . '))');
+		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function page_curl_cron(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$default = parse_url($this->config->url);	
+		if($this->config->debug) print_r($default);
+		$this->db->connect();
+		$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($this->config->url) . '",0)');
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' LIMIT ' . $this->config->pagecronlimit);
+		$records = array(); while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
+		foreach($records as $url){
+			$html = file_get_contents($url);			
+			if(!$html) {
+				// Исклучаем из дальнейшей загрузки отсутствующие страницы
+				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . '="' . $this->db->escape($url) . '"');
+				continue;
+			}
+			// http://stackoverflow.com/questions/3523409/domdocument-encoding-problems-characters-transformed/12846243#12846243
+			$doc = new DOMDocument('1.0','utf-8');
+			$doc->loadHTML($html);
+			$xpath = new DOMXpath($doc);
+			
+			// Добавляем в поиск все ссылки на странице, на том же домене
+			$elements = $xpath->query('//a[@href]//@href');
+			if (!is_null($elements)) {
+				foreach ($elements as $element) {
+					$href = unparse_url(parse_url($element->nodeValue),$default);
+					$parse = parse_url($href);
+					if($parse['host']==$default['host']&&(strtolower($parse['scheme'])=='http'||strtolower($parse['scheme'])=='https')) {
+						$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($href) . '",0)');
+					}
+				}
+			}
+			
+			// Обрабатываем поля на странице
+			$fields = array();
+			foreach($this->config->urlfields as $urlfield=>$values){
+				if($this->config->debug) print_r($values);
+				$elements = $xpath->query($values[1]);
+				$tokens = array();
+				if (!is_null($elements)) {
+					foreach ($elements as $element) {
+						if($this->config->debug) print_r($element->nodeValue);
+						$tokens[] = preg_replace($values[2], $values[3], $element->nodeValue);
+					}
+				}
+				$fields[$urlfield] = trim(implode('',$tokens));
+			}
+
+			// Обрабатываем транслит изображений
+			for($i=1;$i<=6;$i++){
+				$src = $fields["image" . $i];
+				if($src){
+					$url = unparse_url(parse_url($src),$default);
+					$type = explode(".", $url);
+					$ext = strtolower($type[count($type)-1]);
+					$file = $this->config->imagedir . $fields["translit"] . $i . '.' . $ext;
+					$fields["image" . $i] = '/' . $file;
+					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($url) . '","' . $this->db->escape($file) . '",0)');
+				}
+			}
+			
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")');
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($url) . '",' . time() . ')');
+		}
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function image_curl_cron(){
+		$start = microtime(true);
+		set_time_limit(0);
+		//get watermark
+		$watermark = $this->config->watermark;
+		//get watermark size
+		$watermarkSize = getimagesize($watermark);
+		$watermarkWidth = $watermarkSize[0];
+		$watermarkHeight = $watermarkSize[1];		
+		//get watermark extension
+		$type = explode(".", $watermark);
+		$ext = strtolower($type[count($type)-1]);
+		$ext = (!in_array($ext, array("jpeg","png","gif"))) ? "jpeg" : $ext;		
+		//create watermark source
+		$func = "imagecreatefrom".$ext;
+		$watermarkSource = $func($watermark);
+
+		$padding = 0; //padding from image border
+		
+		$this->db->connect();
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE loaded="0" LIMIT ' . $this->config->imagecronlimit);
+		$records = array(); while($row=$this->db->fetch_row($result)) $records[$row[FIELD_FILE]]=$row[FIELD_URL];
+		foreach($records as $file=>$url){
+			$type = explode(".", $url);
+			$ext = strtolower($type[count($type)-1]);
+			$ext = (!in_array($ext, array("jpeg","png","gif"))) ? "jpeg" : $ext;
+			$tempFile = $this->config->imagetempfilename . getmypid() . '.' . $ext;
+			unlink($tempFile);	
+			// Загрузка и сохранение файла на диске
+			$image = file_get_contents($url);
+			if(!$image) {
+				// Исклучаем из дальнейшей загрузки отсутствующие страницы
+				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . '="' . $this->db->escape($url) . '" AND ' . FIELD_FILE . '="' . $this->db->escape($file) . '"');
+				continue;
+			}
+			file_put_contents($tempFile, $image);			
+			$size = getimagesize($tempFile);
+			$width = $size[0];
+			$height = $size[1];
+			$func = "imagecreatefrom".$ext;
+			$source = $func($tempFile);
+			//create output resource
+			$output = imagecreatetruecolor($width, $height);
+			//to preserve PNG transparency
+			//saving all full alpha channel information
+			imagesavealpha($output, true);
+			//setting completely transparent color
+			$transparent = imagecolorallocatealpha($output, 0, 0, 0, 127);
+			//filling created image with transparent color
+			imagefill($output, 0, 0, $transparent);			
+			//copy source to destination
+			imagecopyresampled( $output, $source,  0, 0, 0, 0, 
+								$width, $height, $width, $height);			
+			//let's make watermark 1/4 of image size
+			$wanted_width = round($width/4);
+			$wanted_height = round($height/4);
+			//resize by height
+			if(($watermarkWidth/$wanted_width) < ($watermarkHeight/$wanted_height))
+			{
+				$wanted_width = ($watermarkWidth*$wanted_height)/$watermarkHeight;
+			}
+			else//resize by width
+			{
+				$wanted_height = ($watermarkHeight*$wanted_width)/$watermarkWidth;
+			}
+			//bottom right
+			$dst_x = $width - $padding - $wanted_width;
+			$dst_y = $height-$padding-$wanted_height;
+			//copy watermark
+			imagecopyresampled( $output, $watermarkSource,  $dst_x, $dst_y, 0, 0, 
+								$wanted_width, $wanted_height, $watermarkWidth, $watermarkHeight);
+			$func = "image".$ext;
+			$func($output, $file); 
+
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($url) . '","' . $this->db->escape($file) . '",1)');
+			unlink($tempFile);	
+		}
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function clear_xls(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$config = new JConfig();
+		$db = new JDatabase();
+		$this->db->connect();
+		$this->db->query('TRUNCATE ' . $this->config->dbprefix . TABLE_XLS);
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function clear_url(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$config = new JConfig();
+		$db = new JDatabase();
+		$this->db->connect();
+		$this->db->query('TRUNCATE ' . $this->config->dbprefix . TABLE_URL);
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function import_url(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function import_xls(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$type = explode(".", $this->config->xls);
+		$ext = strtolower($type[count($type)-1]);
+		$tempFile = $this->config->xlstempfilename . getmypid() . '.' . $ext;
+		unlink($tempFile);	
+		
+		// Загрузка и сохранение файла на диске
+		file_put_contents($tempFile, file_get_contents($this->config->xls));
+		
+		$inputFileType = PHPExcel_IOFactory::identify($tempFile); 
+		$reader = PHPExcel_IOFactory::createReader($inputFileType);
+		$excel = $reader->load($tempFile);
+		$sheet = $excel->getActiveSheet();
+		$outline = array(1=>1,2=>1,3=>1,4=>1,5=>1);
+		$this->db->connect();
+		foreach($sheet->getRowIterator() as $rowIterator){
+			$row = $rowIterator->getRowIndex();
+			$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
+			$fields = array(); foreach($this->config->xlsfields as $xlsfield=>$values) $fields[$xlsfield] = $this->db->escape(trim(eval($values[1])));
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($fields)) . ') VALUES ("' . implode('","',array_values($fields)) . '")');
+		}
+		$this->db->disconnect();
+		unlink($tempFile);	
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	public function export_csv(){
+		$start = microtime(true);
+		set_time_limit(0);
+		unlink($this->config->csv);	
+		$file = fopen($this->config->csv,"w");
+		// The fputcsv() function formats a line as CSV and writes it to an open file.
+		fputcsv($file,array_keys($this->config->csvfields),';');
+		$this->db->connect();
+		$where = array(); foreach($this->config->joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
+		while($row=$this->db->fetch_row($result)){
+			$values = array(); foreach($this->config->csvfields as $field) $values[] = ($field&&$row[$field])?$row[$field]:'';
+			// The fputcsv() function formats a line as CSV and writes it to an open file.
+		  	fputcsv($file,$values,';');
+		}
+		$this->db->disconnect();
+		fclose($file);
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+	
+	public function task(){
+		$start = microtime(true);
+		set_time_limit(0);
+		$this->clear_xls();
+		$this->import_xls();
+		$this->export_csv();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+	}
+}

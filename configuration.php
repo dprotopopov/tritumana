@@ -10,7 +10,7 @@ class JConfig {
 	// Please see your system's fork(2) man page for specific details as to how fork works on your system.
 	public $parallel = '0'; // Флаг использования параллельных процессов
 	public $imagecronlimit = 100; // Количество загружаемых изображений при одном вызове cron
-	public $pagecronlimit = 1000; // Количество загружаемых страниц при одном вызове cron
+	public $pagecronlimit = 100; // Количество загружаемых страниц при одном вызове cron
 	public $pageupdatetime = 36000; // Периодичность обновления информации в базе данных
 	public $dbtype = 'mysqli'; // Не реализовано
 	public $host = 'localhost'; // Сервер базы данных
@@ -43,7 +43,7 @@ class JConfig {
 		'image4'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[4]//@src','/.*/i','$0'),
 		'image5'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[5]//@src','/.*/i','$0'),
 		'image6'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[6]//@src','/.*/i','$0'),
-		'translit'=>array('varchar(255)','//div[@class="cpt_maincontent"]//form[@action]//@action','/\/product\/([^\/]*)\/$/i','$1'),
+		'translit'=>array('varchar(255)','//div[@class="cpt_maincontent"]//form[@action]//@action','/(([^\/]*)\/)*$/i','$2'),
 		'basePrice'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Баз. опт:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
 		'price1'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Опт1:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
 		'price2'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Опт2:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),

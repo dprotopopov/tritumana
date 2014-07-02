@@ -154,9 +154,9 @@ class JApp {
 				$src = $fields["image" . $i];
 				if($src){
 					$imageUrl = unparse_url(parse_url($src),$default);
-					$type = explode(".", $url);
+					$type = explode(".", $imageUrl);
 					$ext = strtolower($type[count($type)-1]);
-					$file = $this->config->imagedir . $fields["translit"] . $i . '.' . $ext;
+					$file = $this->config->imagedir . $fields["translit"] . '_' . $i . '.' . $ext;
 					$fields["image" . $i] = '/' . $file;
 					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)');
 				}

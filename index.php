@@ -3,7 +3,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
-<meta http-equiv="Refresh" content="60;" />
 <title><?php echo $config->sitename; ?></title>
 </head>
 <body>
@@ -82,6 +81,7 @@ if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
     <input name="search" type="submit" value="task" />
 </form>
 <p><a href="cron.php" target="_blank">cron.php</a></p>
+<p><a href="index.php" target="_self">index.php</a></p>
 
 </body>
 </html>

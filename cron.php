@@ -20,7 +20,6 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <meta name="Description" content="" />
 <meta http-equiv="Refresh" content="60;" />
 <title><?php echo $config->sitename; ?></title>
-
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
@@ -35,6 +34,9 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <div class="jumbotron">
 <?php
 	echo "<h1>" . $config->sitename . "</h1>";
+?>
+	<iframe src="FlipClock-master/examples/localization.html" width="720" align="middle" scrolling="no"></iframe>
+<?php
 	$app->info();		
 ?>
 <p><a href="index.php" target="_blank" class="btn btn-primary btn-lg" role="button">Learn more</a></p>

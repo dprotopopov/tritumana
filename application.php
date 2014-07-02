@@ -37,7 +37,7 @@ class JApp {
 		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function info(){
@@ -173,7 +173,7 @@ class JApp {
 		}
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function image_curl_cron(){
@@ -290,7 +290,7 @@ class JApp {
 		}
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function clear_xls(){
@@ -302,7 +302,7 @@ class JApp {
 		$this->db->query('TRUNCATE ' . $this->config->dbprefix . TABLE_XLS);
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function clear_url(){
@@ -314,14 +314,14 @@ class JApp {
 		$this->db->query('TRUNCATE ' . $this->config->dbprefix . TABLE_URL);
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function import_url(){
 		$start = microtime(true);
 		set_time_limit(0);
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function import_xls(){
@@ -350,7 +350,7 @@ class JApp {
 		$this->db->disconnect();
 		unlink($tempFile);	
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function export_csv(){
@@ -371,7 +371,7 @@ class JApp {
 		$this->db->disconnect();
 		fclose($file);
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 	
 	public function task(){
@@ -381,6 +381,6 @@ class JApp {
 		$this->import_xls();
 		$this->export_csv();
 		$duration = microtime(true) - $start;
-		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 }

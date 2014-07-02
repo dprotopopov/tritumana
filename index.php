@@ -19,6 +19,8 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
 <title><?php echo $config->sitename; ?></title>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
@@ -55,14 +57,14 @@ require_once( dirname(__FILE__) . '/defines.php' );
 ?>
 <form action="index.php" method="post" target="_self">
 <div class="input-group">
-    <label class="input-group-addon"><input name="action" type="radio" value="rebuild_database" />rebuild_database</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="page_curl_cron" />page_curl_cron</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="image_curl_cron"/>image_curl_cron</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="clear_xls" />clear_xls</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="clear_url" />clear_url</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="import_xls" />import_xls</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="import_url" />import_url</label>
-    <label class="input-group-addon"><input name="action" type="radio" value="export_csv" />export_csv</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="rebuild_database" />rebuild_database</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="page_curl_cron" />page_curl_cron</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="image_curl_cron"/>image_curl_cron</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="clear_xls" />clear_xls</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="clear_url" />clear_url</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="import_xls" />import_xls</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="import_url" />import_url</label>
+    <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="export_csv" />export_csv</label>
 	<span class="input-group-btn"><input name="submit" type="submit" value="Go!" class="btn" /></span>
 </div>
 </form>

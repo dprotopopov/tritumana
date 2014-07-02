@@ -13,6 +13,7 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script></head>
 <body>
+<div class="jumbotron">
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
@@ -26,6 +27,9 @@ if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
 	$config = new JConfig();
 	$db = new JDatabase();
 	$app = new JApp();
+	
+echo "<h1>" . $config->sitename . "</h1>";
+	
 	switch ($action){
 		case 'rebuild_database':
 		case 'page_curl_cron':
@@ -41,52 +45,26 @@ if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
 	}
 	
 	$app->info();		
-
 ?>
 <form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="rebuild_database" />
-    <input name="submit" type="submit" value="rebuild_database" class="btn btn-danger btn-xs btn-block" />
+<div class="input-group">
+    <label class="input-group-addon"><input name="action" type="radio" value="rebuild_database" />rebuild_database</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="page_curl_cron" />page_curl_cron</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="image_curl_cron"/>image_curl_cron</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="clear_xls" />clear_xls</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="clear_url" />clear_url</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="import_xls" />import_xls</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="import_url" />import_url</label>
+    <label class="input-group-addon"><input name="action" type="radio" value="export_csv" />export_csv</label>
+	<span class="input-group-btn"><input name="submit" type="submit" value="Go!" class="btn" /></span>
+</div>
 </form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="page_curl_cron" />
-    <input name="submit" type="submit" value="page_curl_cron" class="btn btn-warning btn-xs btn-block"/>
-</form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="image_curl_cron" />
-    <input name="submit" type="submit" value="image_curl_cron" class="btn btn-warning btn-xs btn-block"/>
-</form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="clear_xls" />
-    <input name="submit" type="submit" value="clear_xls" class="btn btn-warning btn-xs btn-block" />
-</form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="clear_url" />
-    <input name="submit" type="submit" value="clear_url" class="btn btn-warning btn-xs btn-block" />
-</form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="import_xls" />
-    <input name="submit" type="submit" value="import_xls" class="btn btn-warning btn-xs btn-block" />
-</form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="import_url" />
-    <input name="submit" type="submit" value="import_url" class="btn btn-warning btn-xs btn-block" />
-</form>
-
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="export_csv" />
-    <input name="submit" type="submit" value="export_csv" class="btn btn-warning btn-xs btn-block" />
-</form>
-
+<br />
 <form action="index.php" method="post" target="_self">
     <input name="action" type="hidden" value="task" />
-    <input name="search" type="submit" value="task" class="btn btn-success btn-lg btn-block" />
+    <input name="submit" type="submit" value="task" class="btn btn-success btn-lg btn-block" />
 </form>
+</div>
 <p><a href="cron.php" target="_blank" class="btn btn-default btn-block">cron.php</a></p>
 <p><a href="index.php" target="_self" class="btn btn-default btn-block">index.php</a></p>
 

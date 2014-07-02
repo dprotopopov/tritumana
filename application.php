@@ -31,8 +31,8 @@ class JApp {
 		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_URL);
 		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_PAGE);
 		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_IMAGE);
-		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', array_keys($this->config->joins)) . '))');
-		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', array_values($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', $this->config->xlskeys) . '), INDEX (' . implode(',', array_keys($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', $this->config->urlkeys) . '), INDEX (' . implode(',', array_values($this->config->joins)) . '))');
 		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_URL . '))');
 		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
 		$this->db->disconnect();
@@ -45,8 +45,8 @@ class JApp {
 		$this->db->connect();
 		$xlscolumns = array(); foreach($this->config->xlsfields as $field=>$values) $xlscolumns[] = $field . ' ' . $values[0];
 		$urlcolumns = array(); foreach($this->config->urlfields as $field=>$values) $urlcolumns[] = $field . ' ' . $values[0];
-		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', array_keys($this->config->joins)) . '))');
-		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', array_values($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', $this->config->xlskeys) . '), INDEX (' . implode(',', array_keys($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', $this->config->urlkeys) . '), INDEX (' . implode(',', array_values($this->config->joins)) . '))');
 		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_URL . '))');
 		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
 
@@ -201,6 +201,9 @@ class JApp {
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.php%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.asp%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.asx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.exe%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.msi%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.zip%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mov%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.avi%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mpg%"');

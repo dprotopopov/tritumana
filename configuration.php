@@ -1,7 +1,7 @@
 ﻿<?php
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ ОПТОМ'; // Название загружаемого сайта
-	public $debug = '0'; // Флаг вывода отладочной информации
+	public $debug = '1'; // Флаг вывода отладочной информации
 	// http://stackoverflow.com/questions/12214785/how-to-use-pcntl-fork-with-apache
 	// It is not possible to use the function 'pcntl_fork' when PHP is used as Apache module.
 	// You can only use pcntl_fork in CGI mode or from command-line.
@@ -93,6 +93,14 @@ class JConfig {
 	public $joins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
 		'Outline3'=>'product_name',
 		'Column12'=>'product_price'
+	);
+	public $urlkeys = array( // Перечень полей первичного ключа
+		'product_name',
+		'product_price'
+	);
+	public $xlskeys = array( // Перечень полей первичного ключа
+		'Column1',
+		'Column2'
 	);
 	public $csvfields = array( // Список выгружаемых полей
 		'Артикул'=>'Column1',

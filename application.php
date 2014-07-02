@@ -31,10 +31,10 @@ class JApp {
 		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_URL);
 		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_PAGE);
 		$this->db->query('DROP TABLE IF EXISTS ' . $this->config->dbprefix . TABLE_IMAGE);
-		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', array_keys($this->config->joins)) . '))');
-		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', array_values($this->config->joins)) . '))');
-		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_URL . '))');
-		$this->db->query('CREATE TABLE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', array_keys($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', array_values($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_URL . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
@@ -43,6 +43,13 @@ class JApp {
 	public function info(){
 		set_time_limit(0);
 		$this->db->connect();
+		$xlscolumns = array(); foreach($this->config->xlsfields as $field=>$values) $xlscolumns[] = $field . ' ' . $values[0];
+		$urlcolumns = array(); foreach($this->config->urlfields as $field=>$values) $urlcolumns[] = $field . ' ' . $values[0];
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',', $xlscolumns) . ', PRIMARY KEY (' . implode(',', array_keys($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', $urlcolumns) . ', PRIMARY KEY (' . implode(',', array_values($this->config->joins)) . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_URL . '))');
+		$this->db->query('CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ' varchar(255),' . FIELD_FILE . ' varchar(255),' . FIELD_LOADED . ' integer, PRIMARY KEY (' . FIELD_FILE . '))');
+
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE loaded="0"');
 		$queue = $this->db->fetch_single($result);
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE);

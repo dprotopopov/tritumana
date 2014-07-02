@@ -93,6 +93,14 @@ class JConfig {
 		'Column12'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(12,$row)->getValue();'),
 		'Column13'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(13,$row)->getValue();'),
 	);
+	// Вид сопоставления записей из таблицы и с сайта
+	// JOIN
+	// LEFT JOIN
+	// RIGHT JOIN
+	// INNER JOIN
+	// OUTER JOIN
+	// и т.д.
+	public $jointype = 'LEFT JOIN'; 
 	public $joins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
 		'Outline3'=>'product_name',
 		'Column11'=>'product_price'

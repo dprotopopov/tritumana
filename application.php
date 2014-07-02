@@ -384,7 +384,7 @@ class JApp {
 		fputcsv($file,array_keys($this->config->csvfields),';');
 		$this->db->connect();
 		$where = array(); foreach($this->config->joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->jointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
 		while($row=$this->db->fetch_row($result)){
 			$values = array(); foreach($this->config->csvfields as $field) $values[] = ($field&&$row[$field])?$row[$field]:'';
 			// The fputcsv() function formats a line as CSV and writes it to an open file.

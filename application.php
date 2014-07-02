@@ -279,7 +279,7 @@ class JApp {
 			$func = "image".$ext;
 			$func($output, $file); 
 
-			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",1)');
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",' . time() . ')');
 			unlink($tempFile);	
 			echo "<pre><b>$url</b> complite.</pre>";
 			

@@ -1,7 +1,7 @@
 ﻿<?php
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ ОПТОМ'; // Название загружаемого сайта
-	public $debug = '0'; // Флаг вывода отладлчной информации
+	public $debug = '0'; // Флаг вывода отладочной информации
 	public $imagecronlimit = 100; // Количество загружаемых изображений при одном вызове cron
 	public $pagecronlimit = 1000; // Количество загружаемых страниц при одном вызове cron
 	public $pageupdatetime = 36000; // Периодичность обновления информации в базе данных
@@ -10,12 +10,12 @@ class JConfig {
 	public $user = 'tritumana'; // Логин базы данных
 	public $password = '12345'; // Пароль базы данных
 	public $db = 'tritumana';  // Название базы данных
-	public $dbprefix = 'tursportopt_';  // Префикс табщиц в базе данных
-	public $persistent = 1;  // Повторно использовать коннеут к базе данных
+	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
+	public $persistent = 1;  // Повторно использовать коннект к базе данных
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта
 	public $xls = 'http://www.tursportopt.ru/price/opt.xls'; // Адрес загружаемой таблицы Excel
-	public $csv = 'opt.csv'; // Название созраняемого файла
-	public $imagedir = 'images/'; // Директория для сограниения загруженных излбражений
+	public $csv = 'opt.csv'; // Название сохраняемого файла
+	public $imagedir = 'images/'; // Директория для сохранения загруженных излбражений
 	public $imagetempfilename = 'image' ; // Префикс имени временных загруженных файлов изображений
 	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
 	public $urlfields = array( // Настройки парсинга полей страниц сайта

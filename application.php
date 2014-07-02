@@ -167,7 +167,7 @@ class JApp {
 			
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")');
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')');
-			echo "<pre><b>$url</b> complite.</pre>";
+			echo "<pre><a href='$url' target='_blank'>$url</a> complite.</pre>";
 
 			// $pid === -1 failed to fork
 			// $pid == 0, this is the child thread
@@ -288,7 +288,7 @@ class JApp {
 			// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 			error_reporting(E_ERROR | E_PARSE);
 			unlink($tempFile);	
-			echo "<pre><b>$url</b> complite.</pre>";
+			echo "<pre><a href='$url' target='_blank'>$url</a> complite.</pre>";
 			
 			// $pid === -1 failed to fork
 			// $pid == 0, this is the child thread

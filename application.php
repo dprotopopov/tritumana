@@ -40,6 +40,31 @@ class JApp {
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
 	}
 	
+	public function info(){
+		set_time_limit(0);
+		$this->db->connect();
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE loaded="0"');
+		$queue = $this->db->fetch_single($result);
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE);
+		$queue_total = $this->db->fetch_single($result);
+		echo "<pre>Image queue: <b>$queue/$queue_total</b></pre>";
+		
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime));
+		$queue = $this->db->fetch_single($result);
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE);
+		$queue_total = $this->db->fetch_single($result);
+		echo "<pre>Page queue: <b>$queue/$queue_total</b></pre>";
+		
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_URL );
+		$count = $this->db->fetch_single($result);
+		echo "<pre>Url records downloaded: <b>$count</b></pre>";
+		
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_XLS );
+		$count = $this->db->fetch_single($result);
+		echo "<pre>Xls records downloaded: <b>$count</b></pre>";
+		$this->db->disconnect();
+	}
+	
 	public function page_curl_cron(){
 		$start = microtime(true);
 		set_time_limit(0);
@@ -173,13 +198,14 @@ class JApp {
 			//let's make watermark 1/4 of image size
 			$wanted_width = round($width/4);
 			$wanted_height = round($height/4);
-			//resize by height
 			if(($watermarkWidth/$wanted_width) < ($watermarkHeight/$wanted_height))
 			{
+				//resize by height
 				$wanted_width = ($watermarkWidth*$wanted_height)/$watermarkHeight;
 			}
-			else//resize by width
+			else
 			{
+				//resize by width
 				$wanted_height = ($watermarkHeight*$wanted_width)/$watermarkWidth;
 			}
 			//bottom right
@@ -258,6 +284,7 @@ class JApp {
 		$duration = microtime(true) - $start;
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre><br />";
 	}
+	
 	public function export_csv(){
 		$start = microtime(true);
 		set_time_limit(0);

@@ -3,6 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
+<meta http-equiv="Refresh" content="60;" />
 <title><?php echo $config->sitename; ?></title>
 </head>
 <body>
@@ -32,6 +33,9 @@ if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
 			$app->$action();		
 			break;
 	}
+	
+	$app->info();		
+
 ?>
 <form action="index.php" method="post" target="_self">
     <input name="action" type="hidden" value="rebuild_database" />

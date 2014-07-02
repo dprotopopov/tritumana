@@ -18,7 +18,7 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
-<meta http-equiv="Refresh" content="60;" />
+<meta http-equiv="Refresh" content="15;" />
 <title><?php echo $config->sitename; ?></title>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
@@ -32,26 +32,8 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
-<div class="jumbotron">
 <?php
-	echo "<h1>" . $config->sitename . "</h1>";
-?>
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <p>cron.php должен быть установлен для запуска задачи по-расписанию. Он выполняет задачи парсинга страниц и загрузки картинок в соответствии с очередью ссылок.</p>
-        <p>cron.php также можно открыть в браузере - его страница будет обновляться, запуская задачи парсинга сайта.</p>
-        <p>Использование: cd &lt;рабочий каталог&gt; &amp; php -f cron.php </p>
-      </div>
-    </div>
-	<iframe src="FlipClock-master/examples/localization.html" width="100%" align="middle" scrolling="no"></iframe>
-	<iframe src="info.php" width="100%" height="240" align="middle" scrolling="no"></iframe>
-<p><a href="index.php" target="_blank" class="btn btn-primary btn-lg" role="button">Learn more</a></p>
-</div>
-</div>
-<?php
-	$app->page_curl_cron();		
-	$app->image_curl_cron();		
+	$app->info();		
 ?>
 </body>
 </html>

@@ -3,7 +3,7 @@
 // Разрабочик dmitry@protopopov.ru
 
 class JConfig {
-	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ ОПТОМ'; // Название загружаемого сайта
+	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ'; // Название загружаемого сайта
 	public $debug = '0'; // Флаг вывода отладочной информации
 	// http://stackoverflow.com/questions/12214785/how-to-use-pcntl-fork-with-apache
 	// It is not possible to use the function 'pcntl_fork' when PHP is used as Apache module.

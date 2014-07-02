@@ -52,9 +52,10 @@ require_once( dirname(__FILE__) . '/defines.php' );
 			$app->$action();		
 			break;
 	}
-	
-	$app->info();		
+
 ?>
+	<iframe src="info.php" width="100%" height="240" align="middle" scrolling="no"></iframe>
+    
 <form action="index.php" method="post" target="_self">
 <div class="input-group">
     <label class="btn btn-default input-group-addon"><input name="action" type="radio" value="rebuild_database" />rebuild_database</label>

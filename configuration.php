@@ -30,7 +30,7 @@ class JConfig {
 	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
 	public $urlfields = array( // Настройки парсинга полей страниц сайта
 		'productID'=>array('varchar(255)','//div[@class="cpt_maincontent"]//input[@name="productID"]/text()','/.*/i','$0'),
-		'product_price'=>array('varchar(50)','//div[@class="cpt_maincontent"]//input[@name="product_price"]/text()','/.*/i','$0'),
+		'product_price'=>array('varchar(50)','//div[@class="cpt_maincontent"]//div[@class="cpt_product_price"]//text()','/\D*(\d*)\D*/i','$1'),
 		'product_list_price'=>array('varchar(50)','//div[@class="cpt_maincontent"]//input[@name="product_list_price"]/text()','/.*/i','$0'),
 		'product_name'=>array('varchar(255)','//div[@class="cpt_product_name"]//h1/text()','/.*/i','$0'),
 		'description'=>array('text','//div[@class="description"]//text()','/.*/i','$0'),
@@ -98,12 +98,14 @@ class JConfig {
 		'Column11'=>'product_price'
 	);
 	public $urlkeys = array( // Перечень полей первичного ключа
+		'productID',
 		'product_name',
 		'product_price'
 	);
 	public $xlskeys = array( // Перечень полей первичного ключа
 		'Column1',
-		'Column2'
+		'Column2',
+		'Column11'
 	);
 	public $csvfields = array( // Список выгружаемых полей
 		'Артикул'=>'Column1',

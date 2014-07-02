@@ -77,6 +77,7 @@ class JApp {
 		set_time_limit(0);
 		$default = parse_url($this->config->url);	
 		$this->db->connect();
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE NOT ' . FIELD_URL . ' LIKE "%' . $default['host'] . '%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.jpg%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.jpeg%"');
 		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.gif%"');
@@ -131,12 +132,9 @@ class JApp {
 			$elements = $xpath->query('//a[@href]//@href');
 			if (!is_null($elements)) {
 				foreach ($elements as $element) {
-					$href = unparse_url(parse_url($element->nodeValue),$default);
-					$parse = parse_url($href);
-					if($parse['query']) continue;
-					if($parse['host']!=$default['host']) continue;
-					if(!in_array(strtolower($parse['scheme']),array('http','https'))) continue;
+					$parse = parse_url($element->nodeValue);
 					if(isset($parse['fragment'])) unset($parse['fragment']);
+					if(isset($parse['query'])) unset($parse['query']);
 					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe(unparse_url($parse,$default)) . '",0)');
 				}
 			}

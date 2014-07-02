@@ -46,14 +46,17 @@ class JApp {
 		$default = parse_url($this->config->url);	
 		if($this->config->debug) print_r($default);
 		$this->db->connect();
-		$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($this->config->url) . '",0)');
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' LIMIT ' . $this->config->pagecronlimit);
-		$records = array(); while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
+		$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($this->config->url) . '",0)');
+		$records = array(); 
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records) + 1));
+		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records) + 1));
+		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
 		foreach($records as $url){
 			$html = file_get_contents($url);			
 			if(!$html) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
-				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . '="' . $this->db->escape($url) . '"');
+				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . '="' . safe($url) . '"');
 				continue;
 			}
 			// http://stackoverflow.com/questions/3523409/domdocument-encoding-problems-characters-transformed/12846243#12846243
@@ -66,10 +69,15 @@ class JApp {
 			if (!is_null($elements)) {
 				foreach ($elements as $element) {
 					$href = unparse_url(parse_url($element->nodeValue),$default);
+					$type = explode(".", $href);
+					$ext = strtolower($type[count($type)-1]);
+					if (in_array($ext, array("jpeg","png","gif","jpg","avi","mov","mpg","mpeg","wmp","wmf","png","pdf","doc","xls","ppt","swf","exe","msi"))) continue;
 					$parse = parse_url($href);
-					if($parse['host']==$default['host']&&(strtolower($parse['scheme'])=='http'||strtolower($parse['scheme'])=='https')) {
-						$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($href) . '",0)');
-					}
+					if($parse['query']) continue;
+					if($parse['host']!=$default['host']) continue;
+					if(!in_array(strtolower($parse['scheme']),array('http','https'))) continue;
+					if(isset($parse['fragment'])) unset($parse['fragment']);
+					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe(unparse_url($parse,$default)) . '",0)');
 				}
 			}
 			
@@ -85,7 +93,7 @@ class JApp {
 						$tokens[] = preg_replace($values[2], $values[3], $element->nodeValue);
 					}
 				}
-				$fields[$urlfield] = trim(implode('',$tokens));
+				$fields[$urlfield] = safe(trim(implode('',$tokens)));
 			}
 
 			// Обрабатываем транслит изображений
@@ -97,12 +105,12 @@ class JApp {
 					$ext = strtolower($type[count($type)-1]);
 					$file = $this->config->imagedir . $fields["translit"] . $i . '.' . $ext;
 					$fields["image" . $i] = '/' . $file;
-					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($url) . '","' . $this->db->escape($file) . '",0)');
+					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",0)');
 				}
 			}
 			
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")');
-			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($url) . '",' . time() . ')');
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')');
 		}
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
@@ -141,7 +149,7 @@ class JApp {
 			$image = file_get_contents($url);
 			if(!$image) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
-				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . '="' . $this->db->escape($url) . '" AND ' . FIELD_FILE . '="' . $this->db->escape($file) . '"');
+				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . '="' . safe($url) . '" AND ' . FIELD_FILE . '="' . safe($file) . '"');
 				continue;
 			}
 			file_put_contents($tempFile, $image);			
@@ -183,7 +191,7 @@ class JApp {
 			$func = "image".$ext;
 			$func($output, $file); 
 
-			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . $this->db->escape($url) . '","' . $this->db->escape($file) . '",1)');
+			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",1)');
 			unlink($tempFile);	
 		}
 		$this->db->disconnect();
@@ -242,7 +250,7 @@ class JApp {
 		foreach($sheet->getRowIterator() as $rowIterator){
 			$row = $rowIterator->getRowIndex();
 			$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
-			$fields = array(); foreach($this->config->xlsfields as $xlsfield=>$values) $fields[$xlsfield] = $this->db->escape(trim(eval($values[1])));
+			$fields = array(); foreach($this->config->xlsfields as $xlsfield=>$values) $fields[$xlsfield] = safe(trim(eval($values[1])));
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($fields)) . ') VALUES ("' . implode('","',array_values($fields)) . '")');
 		}
 		$this->db->disconnect();

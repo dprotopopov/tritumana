@@ -2,8 +2,8 @@
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ ОПТОМ'; // Название загружаемого сайта
 	public $debug = '0'; // Флаг вывода отладлчной информации
-	public $imagecronlimit = 10; // Количество загружаемых изображений при одном вызове cron
-	public $pagecronlimit = 100; // Количество загружаемых страниц при одном вызове cron
+	public $imagecronlimit = 100; // Количество загружаемых изображений при одном вызове cron
+	public $pagecronlimit = 1000; // Количество загружаемых страниц при одном вызове cron
 	public $pageupdatetime = 36000; // Периодичность обновления информации в базе данных
 	public $dbtype = 'mysqli'; // Не реализовано
 	public $host = 'localhost'; // Сервер базы данных

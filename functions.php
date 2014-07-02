@@ -14,3 +14,6 @@ function unparse_url($parsed_url, $defaults) {
   $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : ''; 
   return "$scheme$user$pass$host$port$path$query$fragment"; 
 }
+function safe($value){ 
+   return addslashes(mysql_real_escape_string(str_replace ('"',"'",$value))); 
+} 

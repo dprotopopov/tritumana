@@ -234,6 +234,8 @@ class JApp {
 			$ext = strtolower($type[count($type)-1]);
 			$ext = (!in_array($ext, array("jpeg","png","gif"))) ? "jpeg" : $ext;
 			$tempFile = $this->config->imagetempfilename . getmypid() . '.' . $ext;
+			// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+			error_reporting(E_ERROR | E_PARSE);
 			unlink($tempFile);	
 			// Загрузка и сохранение файла на диске
 			$image = file_get_contents($url);
@@ -283,6 +285,8 @@ class JApp {
 			$func($output, $file); 
 
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",' . time() . ')');
+			// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+			error_reporting(E_ERROR | E_PARSE);
 			unlink($tempFile);	
 			echo "<pre><b>$url</b> complite.</pre>";
 			
@@ -333,6 +337,8 @@ class JApp {
 		$type = explode(".", $this->config->xls);
 		$ext = strtolower($type[count($type)-1]);
 		$tempFile = $this->config->xlstempfilename . getmypid() . '.' . $ext;
+		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
 		
 		// Загрузка и сохранение файла на диске
@@ -351,6 +357,8 @@ class JApp {
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($fields)) . ') VALUES ("' . implode('","',array_values($fields)) . '")');
 		}
 		$this->db->disconnect();
+		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
 		$duration = microtime(true) - $start;
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
@@ -359,6 +367,8 @@ class JApp {
 	public function export_csv(){
 		$start = microtime(true);
 		set_time_limit(0);
+		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+		error_reporting(E_ERROR | E_PARSE);
 		unlink($this->config->csv);	
 		$file = fopen($this->config->csv,"w");
 		// The fputcsv() function formats a line as CSV and writes it to an open file.

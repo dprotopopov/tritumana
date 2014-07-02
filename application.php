@@ -76,13 +76,32 @@ class JApp {
 		$start = microtime(true);
 		set_time_limit(0);
 		$default = parse_url($this->config->url);	
-		if($this->config->debug) print_r($default);
 		$this->db->connect();
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.jpg%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.jpeg%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.gif%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.png%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.pdf%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.doc%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.xls%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.ppt%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.docx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.xlsx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.pptx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.avi%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mov%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mpg%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mpeg%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.swf%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.exe%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.msi%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.zip%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.swf%"');
 		$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($this->config->url) . '",0)');
 		$records = array(); 
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records) + 1));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
 		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records) + 1));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
 		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
 		foreach($records as $url){
 			$pid = -1;
@@ -110,9 +129,6 @@ class JApp {
 			if (!is_null($elements)) {
 				foreach ($elements as $element) {
 					$href = unparse_url(parse_url($element->nodeValue),$default);
-					$type = explode(".", $href);
-					$ext = strtolower($type[count($type)-1]);
-					if (in_array($ext, array("jpeg","png","gif","jpg","avi","mov","mpg","mpeg","wmp","wmf","png","pdf","doc","xls","ppt","swf","exe","msi"))) continue;
 					$parse = parse_url($href);
 					if($parse['query']) continue;
 					if($parse['host']!=$default['host']) continue;
@@ -125,14 +141,10 @@ class JApp {
 			// Обрабатываем поля на странице
 			$fields = array();
 			foreach($this->config->urlfields as $urlfield=>$values){
-				if($this->config->debug) print_r($values);
 				$elements = $xpath->query($values[1]);
 				$tokens = array();
 				if (!is_null($elements)) {
-					foreach ($elements as $element) {
-						if($this->config->debug) print_r($element->nodeValue);
-						$tokens[] = preg_replace($values[2], $values[3], $element->nodeValue);
-					}
+					foreach ($elements as $element) $tokens[] = preg_replace($values[2], $values[3], $element->nodeValue);
 				}
 				$fields[$urlfield] = safe(trim(implode('',$tokens)));
 			}
@@ -141,17 +153,18 @@ class JApp {
 			for($i=1;$i<=6;$i++){
 				$src = $fields["image" . $i];
 				if($src){
-					$url = unparse_url(parse_url($src),$default);
+					$imageUrl = unparse_url(parse_url($src),$default);
 					$type = explode(".", $url);
 					$ext = strtolower($type[count($type)-1]);
 					$file = $this->config->imagedir . $fields["translit"] . $i . '.' . $ext;
 					$fields["image" . $i] = '/' . $file;
-					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",0)');
+					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)');
 				}
 			}
 			
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")');
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')');
+			echo "<pre><b>$url</b> complite.</pre>";
 
 			// $pid === -1 failed to fork
 			// $pid == 0, this is the child thread
@@ -183,6 +196,22 @@ class JApp {
 		$padding = 0; //padding from image border
 		
 		$this->db->connect();
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.html%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.htm%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.php%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.asp%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.asx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mov%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.avi%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mpg%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.mpeg%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.doc%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.xls%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.ppt%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.docx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.xlsx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.pptx%"');
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.pdf%"');
 		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE loaded="0" LIMIT ' . $this->config->imagecronlimit);
 		$records = array(); while($row=$this->db->fetch_row($result)) $records[$row[FIELD_FILE]]=$row[FIELD_URL];
 		foreach($records as $file=>$url){
@@ -249,6 +278,7 @@ class JApp {
 
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",1)');
 			unlink($tempFile);	
+			echo "<pre><b>$url</b> complite.</pre>";
 			
 			// $pid === -1 failed to fork
 			// $pid == 0, this is the child thread

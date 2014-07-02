@@ -33,6 +33,7 @@ class JDatabase {
 	
    function query($query)
    {
+	 if($this->config->debug) echo "<pre>$query</pre>";
      $this->last_query=$query;
      $this->num_queries++;
      $this->result=mysql_query($this->last_query, $this->connection_id) or $this->query_error();

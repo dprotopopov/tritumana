@@ -81,6 +81,7 @@ if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
     <input name="action" type="hidden" value="task" />
     <input name="search" type="submit" value="task" />
 </form>
+<p><a href="cron.php" target="_blank">cron.php</a></p>
 
 </body>
 </html>

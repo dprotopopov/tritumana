@@ -371,6 +371,9 @@ class JApp {
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($this->config->csv);	
 		$file = fopen($this->config->csv,"w");
+		// http://www.skoumal.net/en/making-utf-8-csv-excel
+		//add BOM to fix UTF-8 in Excel
+		fputs($file, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 		// The fputcsv() function formats a line as CSV and writes it to an open file.
 		fputcsv($file,array_keys($this->config->csvfields),';');
 		$this->db->connect();

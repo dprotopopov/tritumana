@@ -95,7 +95,7 @@ class JConfig {
 	);
 	public $joins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
 		'Outline3'=>'product_name',
-		'Column12'=>'product_price'
+		'Column11'=>'product_price'
 	);
 	public $urlkeys = array( // Перечень полей первичного ключа
 		'product_name',
@@ -117,7 +117,7 @@ class JConfig {
 		'Размер'=>'size',
 		'Вес'=>'weight',
 		'Наименование'=>'Outline3',
-		'Цена продажи'=>'Column12',
+		'Цена продажи'=>'Column11',
 		'Старая цена'=>'',
 		'Остаток'=>'',
 		'Цена закупки'=>'',
@@ -144,7 +144,7 @@ class JConfig {
 		'SEO мета-тег keywords'=>'',
 		'SEO-мета тег description'=>'',
 		'Внешний код'=>'',
-		'Едница измерения'=>'Column13',
+		'Едница измерения'=>'Column12',
 		'Штрихкод EAN13'=>'',
 		'Штрихкод'=>'',
 		'Минимальная цена'=>'',

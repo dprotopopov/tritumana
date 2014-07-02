@@ -85,6 +85,15 @@ class JApp {
 		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records) + 1));
 		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
 		foreach($records as $url){
+			$pid = -1;
+			// The pcntl_fork() function creates a child process that differs from the parent process only in its PID and PPID.
+			// Please see your system's fork(2) man page for specific details as to how fork works on your system.
+			if($this->config->parallel) $pid = pcntl_fork();
+			// $pid === -1 failed to fork
+			// $pid == 0, this is the child thread
+			// $pid != 0, this is the parent thread
+			if ($pid > 0) continue;
+			
 			$html = file_get_contents($url);			
 			if(!$html) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
@@ -143,6 +152,11 @@ class JApp {
 			
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")');
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')');
+
+			// $pid === -1 failed to fork
+			// $pid == 0, this is the child thread
+			// $pid != 0, this is the parent thread
+			if(!$pid) break;
 		}
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
@@ -172,6 +186,15 @@ class JApp {
 		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE loaded="0" LIMIT ' . $this->config->imagecronlimit);
 		$records = array(); while($row=$this->db->fetch_row($result)) $records[$row[FIELD_FILE]]=$row[FIELD_URL];
 		foreach($records as $file=>$url){
+			$pid = -1;
+			// The pcntl_fork() function creates a child process that differs from the parent process only in its PID and PPID.
+			// Please see your system's fork(2) man page for specific details as to how fork works on your system.
+			if($this->config->parallel) $pid = pcntl_fork();
+			// $pid === -1 failed to fork
+			// $pid == 0, this is the child thread
+			// $pid != 0, this is the parent thread
+			if ($pid > 0) continue;
+
 			$type = explode(".", $url);
 			$ext = strtolower($type[count($type)-1]);
 			$ext = (!in_array($ext, array("jpeg","png","gif"))) ? "jpeg" : $ext;
@@ -226,6 +249,11 @@ class JApp {
 
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '","' . safe($file) . '",1)');
 			unlink($tempFile);	
+			
+			// $pid === -1 failed to fork
+			// $pid == 0, this is the child thread
+			// $pid != 0, this is the parent thread
+			if(!$pid) break;
 		}
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;

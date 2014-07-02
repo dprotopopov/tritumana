@@ -2,6 +2,13 @@
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ ОПТОМ'; // Название загружаемого сайта
 	public $debug = '0'; // Флаг вывода отладочной информации
+	// http://stackoverflow.com/questions/12214785/how-to-use-pcntl-fork-with-apache
+	// It is not possible to use the function 'pcntl_fork' when PHP is used as Apache module.
+	// You can only use pcntl_fork in CGI mode or from command-line.
+	// Using this function will result in: 'Fatal error: Call to undefined function: pcntl_fork()'
+	// The pcntl_fork() function creates a child process that differs from the parent process only in its PID and PPID.
+	// Please see your system's fork(2) man page for specific details as to how fork works on your system.
+	public $parallel = '0'; // Флаг использования параллельных процессов
 	public $imagecronlimit = 100; // Количество загружаемых изображений при одном вызове cron
 	public $pagecronlimit = 1000; // Количество загружаемых страниц при одном вызове cron
 	public $pageupdatetime = 36000; // Периодичность обновления информации в базе данных

@@ -78,6 +78,7 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <p><a href="cron.php" target="_blank" class="btn btn-default btn-block">cron.php</a></p>
 <p><a href="index.php" target="_self" class="btn btn-default btn-block">index.php</a></p>
 <p><a href="<?php echo $config->csv; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->csv; ?></a></p>
+<p><a href="<?php echo $config->xls; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->xls; ?></a></p>
 
 </body>
 </html>

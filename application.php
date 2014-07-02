@@ -118,6 +118,10 @@ class JApp {
 			if(!$html) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
 				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . '="' . safe($url) . '"');
+				// $pid === -1 failed to fork
+				// $pid == 0, this is the child thread
+				// $pid != 0, this is the parent thread
+				if(!$pid) break;
 				continue;
 			}
 			// http://stackoverflow.com/questions/3523409/domdocument-encoding-problems-characters-transformed/12846243#12846243
@@ -240,6 +244,10 @@ class JApp {
 			if(!$image) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
 				$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . '="' . safe($url) . '" AND ' . FIELD_FILE . '="' . safe($file) . '"');
+				// $pid === -1 failed to fork
+				// $pid == 0, this is the child thread
+				// $pid != 0, this is the parent thread
+				if(!$pid) break;
 				continue;
 			}
 			file_put_contents($tempFile, $image);			

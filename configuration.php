@@ -1,7 +1,10 @@
 ﻿<?php
+//////////////////////////////////////////////////////////////////////////////
+// Разрабочик dmitry@protopopov.ru
+
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ ОПТОМ'; // Название загружаемого сайта
-	public $debug = '1'; // Флаг вывода отладочной информации
+	public $debug = '0'; // Флаг вывода отладочной информации
 	// http://stackoverflow.com/questions/12214785/how-to-use-pcntl-fork-with-apache
 	// It is not possible to use the function 'pcntl_fork' when PHP is used as Apache module.
 	// You can only use pcntl_fork in CGI mode or from command-line.
@@ -22,7 +25,7 @@ class JConfig {
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта
 	public $xls = 'http://www.tursportopt.ru/price/opt.xls'; // Адрес загружаемой таблицы Excel
 	public $csv = 'opt.csv'; // Название сохраняемого файла
-	public $imagedir = 'images/'; // Директория для сохранения загруженных излбражений
+	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
 	public $imagetempfilename = 'image' ; // Префикс имени временных загруженных файлов изображений
 	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
 	public $urlfields = array( // Настройки парсинга полей страниц сайта

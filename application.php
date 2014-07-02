@@ -120,8 +120,11 @@ class JApp {
 				continue;
 			}
 			// http://stackoverflow.com/questions/3523409/domdocument-encoding-problems-characters-transformed/12846243#12846243
+			// http://stackoverflow.com/questions/1148928/disable-warnings-when-loading-non-well-formed-html-by-domdocument-php
 			$doc = new DOMDocument('1.0','utf-8');
+			libxml_use_internal_errors(true);
 			$doc->loadHTML($html);
+			libxml_clear_errors();
 			$xpath = new DOMXpath($doc);
 			
 			// Добавляем в поиск все ссылки на странице, на том же домене

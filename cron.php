@@ -3,7 +3,7 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
-// Использлвание: cd <рабочий каталог> & php -f cron.php
+// Использование: cd <рабочий каталог> & php -f cron.php
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/database.php' );
 require_once( dirname(__FILE__) . '/application.php' );
@@ -20,6 +20,8 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <meta name="Description" content="" />
 <meta http-equiv="Refresh" content="60;" />
 <title><?php echo $config->sitename; ?></title>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
@@ -35,6 +37,13 @@ require_once( dirname(__FILE__) . '/defines.php' );
 <?php
 	echo "<h1>" . $config->sitename . "</h1>";
 ?>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <p>cron.php должен быть установлен для запуска задачи по-расписанию. Он выполняет задачи парсинга страниц и загрузки картинок в соответствии с очередью ссылок.</p>
+        <p>cron.php также можно открыть в браузере - его страница будет обновляться, запуская задачи парсинга сайта.</p>
+        <p>Использование: cd &lt;рабочий каталог&gt; &amp; php -f cron.php </p>
+      </div>
+    </div>
 	<iframe src="FlipClock-master/examples/localization.html" width="720" align="middle" scrolling="no"></iframe>
 <?php
 	$app->info();		

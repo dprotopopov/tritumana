@@ -1,5 +1,20 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<?php
+//////////////////////////////////////////////////////////////////////////////
+// Разрабочик dmitry@protopopov.ru
+// Использлвание: cd <рабочий каталог> & php -f cron.php
+require_once( dirname(__FILE__) . '/configuration.php' );
+require_once( dirname(__FILE__) . '/database.php' );
+require_once( dirname(__FILE__) . '/application.php' );
+require_once( dirname(__FILE__) . '/functions.php' );
+require_once( dirname(__FILE__) . '/defines.php' );
+
+	$config = new JConfig();
+	$db = new JDatabase();
+	$app = new JApp();
+	
+?>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
@@ -11,24 +26,16 @@
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 
 <!-- Latest compiled and minified JavaScript -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script></head>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
 <body>
+<div class="container">
 <div class="jumbotron">
 <?php
-//////////////////////////////////////////////////////////////////////////////
-// Разрабочик dmitry@protopopov.ru
 
-require_once( dirname(__FILE__) . '/configuration.php' );
-require_once( dirname(__FILE__) . '/database.php' );
-require_once( dirname(__FILE__) . '/application.php' );
-
-if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
+	if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
 	
-	$config = new JConfig();
-	$db = new JDatabase();
-	$app = new JApp();
-	
-echo "<h1>" . $config->sitename . "</h1>";
+	echo "<h1>" . $config->sitename . "</h1>";
 	
 	switch ($action){
 		case 'rebuild_database':
@@ -64,6 +71,7 @@ echo "<h1>" . $config->sitename . "</h1>";
     <input name="action" type="hidden" value="task" />
     <input name="submit" type="submit" value="task" class="btn btn-success btn-lg btn-block" />
 </form>
+</div>
 </div>
 <p><a href="cron.php" target="_blank" class="btn btn-default btn-block">cron.php</a></p>
 <p><a href="index.php" target="_self" class="btn btn-default btn-block">index.php</a></p>

@@ -16,10 +16,10 @@ class JConfig {
 	public $pagecronlimit = 100; // Количество загружаемых страниц при одном вызове cron
 	public $pageupdatetime = 36000; // Периодичность обновления информации в базе данных
 	public $dbtype = 'mysqli'; // Не реализовано
-	public $host = 'localhost'; // Сервер базы данных
-	public $user = 'tritumana'; // Логин базы данных
-	public $password = '12345'; // Пароль базы данных
-	public $db = 'tritumana';  // Название базы данных
+	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
+	public $user = 'u437594118_tri'; // Логин базы данных
+	public $password = 'q1w2e3r4t5y6'; // Пароль базы данных
+	public $db = 'u437594118_tri';  // Название базы данных
 	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
 	public $persistent = 1;  // Повторно использовать коннект к базе данных
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта
@@ -29,24 +29,24 @@ class JConfig {
 	public $imagetempfilename = 'image' ; // Префикс имени временных загруженных файлов изображений
 	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
 	public $urlfields = array( // Настройки парсинга полей страниц сайта
-		'productID'=>array('varchar(255)','//div[@class="cpt_maincontent"]//input[@name="productID"]/text()','/.*/i','$0'),
+		'productID'=>array('varchar(100)','//div[@class="cpt_maincontent"]//input[@name="productID"]/text()','/.*/i','$0'),
 		'product_price'=>array('varchar(50)','//div[@class="cpt_maincontent"]//div[@class="cpt_product_price"]//text()','/\D*(\d*)\D*/i','$1'),
 		'product_list_price'=>array('varchar(50)','//div[@class="cpt_maincontent"]//input[@name="product_list_price"]/text()','/.*/i','$0'),
-		'product_name'=>array('varchar(255)','//div[@class="cpt_product_name"]//h1/text()','/.*/i','$0'),
+		'product_name'=>array('varchar(100)','//div[@class="cpt_product_name"]//h1/text()','/.*/i','$0'),
 		'description'=>array('text','//div[@class="description"]//text()','/.*/i','$0'),
 		'manufacture'=>array('varchar(50)','//div[@class="cpt_product_params_selectable"]//td[contains(.,"Производитель:")]/following-sibling::td/text()','/.*/i','$0'),
 		'type'=>array('varchar(50)','//div[@class="cpt_product_params_selectable"]//td[contains(.,"Тип:")]/following-sibling::td/text()','/.*/i','$0'),
-		'category1'=>array('varchar(255)','(//div[@class="nav"]//a)[1]/text()','/.*/i','$0'),
-		'category2'=>array('varchar(255)','(//div[@class="nav"]//a)[2]/text()','/.*/i','$0'),
-		'category3'=>array('varchar(255)','(//div[@class="nav"]//a)[3]/text()','/.*/i','$0'),
-		'category4'=>array('varchar(255)','(//div[@class="nav"]//a)[4]/text()','/.*/i','$0'),
-		'image1'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[1]//@src','/.*/i','$0'),
-		'image2'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[2]//@src','/.*/i','$0'),
-		'image3'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[3]//@src','/.*/i','$0'),
-		'image4'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[4]//@src','/.*/i','$0'),
-		'image5'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[5]//@src','/.*/i','$0'),
-		'image6'=>array('varchar(255)','(//div[@class="cpt_product_images"]//img)[6]//@src','/.*/i','$0'),
-		'translit'=>array('varchar(255)','//div[@class="cpt_maincontent"]//form[@action]//@action','/(([^\/]*)\/)*$/i','$2'),
+		'category1'=>array('varchar(100)','(//div[@class="nav"]//a)[1]/text()','/.*/i','$0'),
+		'category2'=>array('varchar(100)','(//div[@class="nav"]//a)[2]/text()','/.*/i','$0'),
+		'category3'=>array('varchar(100)','(//div[@class="nav"]//a)[3]/text()','/.*/i','$0'),
+		'category4'=>array('varchar(100)','(//div[@class="nav"]//a)[4]/text()','/.*/i','$0'),
+		'image1'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[1]//@src','/.*/i','$0'),
+		'image2'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[2]//@src','/.*/i','$0'),
+		'image3'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[3]//@src','/.*/i','$0'),
+		'image4'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[4]//@src','/.*/i','$0'),
+		'image5'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[5]//@src','/.*/i','$0'),
+		'image6'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[6]//@src','/.*/i','$0'),
+		'translit'=>array('varchar(100)','//div[@class="cpt_maincontent"]//form[@action]//@action','/(([^\/]*)\/)*$/i','$2'),
 		'basePrice'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Баз. опт:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
 		'price1'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Опт1:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
 		'price2'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Опт2:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
@@ -64,7 +64,7 @@ class JConfig {
 		'materialExternal'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Материал внешний:")]/following-sibling::td/b/text()','/.*/i','$0'),
 		'volume'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Объем:")]/following-sibling::td/b/text()','/.*/i','$0'),
 		'model'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Модель:")]/following-sibling::td/b/text()','/.*/i','$0'),
-		'comment'=>array('varchar(255)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Особенности:")]/following-sibling::td/b/text()','/.*/i','$0'),
+		'comment'=>array('varchar(100)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Особенности:")]/following-sibling::td/b/text()','/.*/i','$0'),
 		'test'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Тест:")]/following-sibling::td/b/text()','/.*/i','$0'),
 		'sizeInPackage'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Размер в упаковке:")]/following-sibling::td/b/text()','/.*/i','$0'),
 		'packageWeight'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"упаковка вес")]/following-sibling::td/text()','/.*/i','$0'),
@@ -75,12 +75,12 @@ class JConfig {
 		'store'=>array('varchar(50)','//div[@class="sku"]//span[contains(.,"На складе:")]/../text()','/.*/i','$0'),
 	);
 	public $xlsfields = array( // Настройки парсинга колонок таблицы Excel
-		'Outline1'=>array('varchar(255)','return $sheet->getCellByColumnAndRow(2,$outline[1])->getValue();'),
-		'Outline2'=>array('varchar(255)','return $sheet->getCellByColumnAndRow(2,$outline[2])->getValue();'),
-		'Outline3'=>array('varchar(255)','return $sheet->getCellByColumnAndRow(2,$outline[3])->getValue();'),
-		'Outline4'=>array('varchar(255)','return $sheet->getCellByColumnAndRow(2,$outline[4])->getValue();'),
-		'Column1'=>array('varchar(255)','return $sheet->getCellByColumnAndRow(1,$row)->getValue();'),
-		'Column2'=>array('varchar(255)','return $sheet->getCellByColumnAndRow(2,$row)->getValue();'),
+		'Outline1'=>array('varchar(100)','return $sheet->getCellByColumnAndRow(2,$outline[1])->getValue();'),
+		'Outline2'=>array('varchar(100)','return $sheet->getCellByColumnAndRow(2,$outline[2])->getValue();'),
+		'Outline3'=>array('varchar(100)','return $sheet->getCellByColumnAndRow(2,$outline[3])->getValue();'),
+		'Outline4'=>array('varchar(100)','return $sheet->getCellByColumnAndRow(2,$outline[4])->getValue();'),
+		'Column1'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(1,$row)->getValue();'),
+		'Column2'=>array('varchar(100)','return $sheet->getCellByColumnAndRow(2,$row)->getValue();'),
 		'Column3'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(3,$row)->getValue();'),
 		'Column4'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(4,$row)->getValue();'),
 		'Column5'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(5,$row)->getValue();'),
@@ -94,6 +94,7 @@ class JConfig {
 		'Column13'=>array('varchar(50)','return $sheet->getCellByColumnAndRow(13,$row)->getValue();'),
 	);
 	// Вид сопоставления записей из таблицы и с сайта
+	// http://dev.mysql.com/doc/refman/5.0/en/join.html
 	// JOIN
 	// LEFT JOIN
 	// RIGHT JOIN

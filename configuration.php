@@ -5,6 +5,8 @@
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ'; // Название загружаемого сайта
 	public $debug = '0'; // Флаг вывода отладочной информации
+	// Если надо ускорять, то флаг parallel позволяет запускать задачи парсинга в параллельных процессах,
+	// если хостинг поддерживает, но не тестировалось
 	// http://stackoverflow.com/questions/12214785/how-to-use-pcntl-fork-with-apache
 	// It is not possible to use the function 'pcntl_fork' when PHP is used as Apache module.
 	// You can only use pcntl_fork in CGI mode or from command-line.
@@ -14,7 +16,10 @@ class JConfig {
 	public $parallel = '0'; // Флаг использования параллельных процессов
 	public $imagecronlimit = 100; // Количество загружаемых изображений при одном вызове cron
 	public $pagecronlimit = 100; // Количество загружаемых страниц при одном вызове cron
-	public $pageupdatetime = 36000; // Периодичность обновления информации в базе данных
+	// Периодичность обновления информации в базе данных
+	// время в секундах, когда информация о странице на сайте в базе считается устаревшей и подлежит новой загрузке
+	// сейчас указано 10 часов = 36000 секунд
+	public $pageupdatetime = 36000; 
 	public $dbtype = 'mysqli'; // Не реализовано
 	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
 	public $user = 'u437594118_tri'; // Логин базы данных
@@ -24,7 +29,7 @@ class JConfig {
 	public $persistent = 1;  // Повторно использовать коннект к базе данных
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта
 	public $xls = 'http://www.tursportopt.ru/price/opt.xls'; // Адрес загружаемой таблицы Excel
-	public $csv = 'opt.csv'; // Название сохраняемого файла
+	public $csv = 'opt.csv'; // Название сохраняемого файла CSV
 	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
 	public $imagetempfilename = 'image' ; // Префикс имени временных загруженных файлов изображений
 	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
@@ -102,6 +107,13 @@ class JConfig {
 	// INNER JOIN
 	// OUTER JOIN
 	// и т.д.
+	// Здесь технология проста
+	// 1.	Скачиваем в таблицу A все записи из xls файла
+	// 2.	Скачиваем в таблицу B все записи из карточек товара с сайта
+	// 3.	Объединяем записи
+	// A JOIN B ON … - находятся записи где для A существует в В и для B существует в A
+	// A LEFT JOIN B ON … - находятся ВСЕ записи A и для B существует в A
+	// и т.д. в соответствии с синтаксисом sql
 	public $jointype = 'LEFT JOIN'; 
 	public $joins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
 		'Outline3'=>'product_name',

@@ -28,6 +28,7 @@ class JConfig {
 	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
 	public $imagetempfilename = 'image' ; // Префикс имени временных загруженных файлов изображений
 	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
+	public $csvtempfilename = 'opt'; // Префикс имени временных загруженных файлов CSV
 	public $urlfields = array( // Настройки парсинга полей страниц сайта
 		'productID'=>array('varchar(100)','//div[@class="cpt_maincontent"]//input[@name="productID"]/text()','/.*/i','$0'),
 		'product_price'=>array('varchar(50)','//div[@class="cpt_maincontent"]//div[@class="cpt_product_price"]//text()','/\D*(\d*)\D*/i','$1'),

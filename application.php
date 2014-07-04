@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
 
@@ -162,7 +162,7 @@ class JApp {
 					$type = explode(".", $imageUrl);
 					$ext = strtolower($type[count($type)-1]);
 					$file = $this->config->imagedir . $fields["translit"] . '_' . $i . '.' . $ext;
-					$fields["image" . $i] = '/' . $file;
+					$fields["image" . $i] = $file;
 					$this->db->query('INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)');
 				}
 			}
@@ -373,6 +373,9 @@ class JApp {
 	public function export_csv(){
 		$start = microtime(true);
 		set_time_limit(0);
+		
+		$addr = explode('/', "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		
 		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($this->config->csv);	
@@ -386,6 +389,10 @@ class JApp {
 		$where = array(); foreach($this->config->joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
 		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->jointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
 		while($row=$this->db->fetch_row($result)){
+			for($i=1;$i<=6;$i++) if($row["image" . $i]) {
+				$addr[count($addr) - 1] =  $row["image" . $i];
+				$row["image" . $i] = implode('/', $addr);
+			}
 			$values = array(); foreach($this->config->csvfields as $field) $values[] = ($field&&$row[$field])?$row[$field]:'';
 			// The fputcsv() function formats a line as CSV and writes it to an open file.
 		  	fputcsv($file,$values,';');
@@ -397,12 +404,62 @@ class JApp {
 	}
 	
 	public function task(){
+		// http://stackoverflow.com/questions/486181/php-suppress-output-within-a-function
+		ob_start();
 		$start = microtime(true);
 		set_time_limit(0);
+
+		$addr = explode('/', "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+				
 		$this->clear_xls();
 		$this->import_xls();
-		$this->export_csv();
+		
+		$tempFile = $this->config->csvtempfilename . getmypid() . '.' . 'csv';
+		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+		error_reporting(E_ERROR | E_PARSE);
+		unlink($tempFile);	
+		
+		// http://stackoverflow.com/questions/16251625/how-to-create-and-download-a-csv-file-from-php-script
+		$file = fopen($tempFile,"w");
+		// http://www.skoumal.net/en/making-utf-8-csv-excel
+		//add BOM to fix UTF-8 in Excel
+		fputs($file, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+		// The fputcsv() function formats a line as CSV and writes it to an open file.
+		fputcsv($file,array_keys($this->config->csvfields),';');
+		$this->db->connect();
+		$where = array(); foreach($this->config->joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->jointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
+		while($row=$this->db->fetch_row($result)){
+			for($i=1;$i<=6;$i++) if($row["image" . $i]) {
+				$addr[count($addr) - 1] =  $row["image" . $i];
+				$row["image" . $i] = implode('/', $addr);
+			}
+			$values = array(); foreach($this->config->csvfields as $field) $values[] = ($field&&$row[$field])?$row[$field]:'';
+			// The fputcsv() function formats a line as CSV and writes it to an open file.
+		  	fputcsv($file,$values,';');
+		}
+		$this->db->disconnect();
+		fclose($file);
+		
 		$duration = microtime(true) - $start;
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
+		// http://stackoverflow.com/questions/486181/php-suppress-output-within-a-function
+		ob_end_clean();
+		
+		ob_start();
+		header('Accept-Ranges: bytes');
+		header('Content-Type: application/csv; charset=UTF-8');
+    	header('Content-Disposition: attachement; filename="' . $this->config->csv . '"');
+		header("Content-Length: " . filesize($tempFile));
+		readfile($tempFile);
+		ob_end_flush();
+
+		// http://stackoverflow.com/questions/486181/php-suppress-output-within-a-function
+		ob_start();
+		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
+		error_reporting(E_ERROR | E_PARSE);
+		unlink($tempFile);	
+		// http://stackoverflow.com/questions/486181/php-suppress-output-within-a-function
+		ob_end_clean();
 	}
 }

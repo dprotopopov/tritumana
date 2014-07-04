@@ -48,7 +48,6 @@ require_once( dirname(__FILE__) . '/defines.php' );
 		case 'import_xls':
 		case 'import_url':
 		case 'export_csv':
-		case 'task':
 			$app->$action();		
 			break;
 	}
@@ -70,15 +69,12 @@ require_once( dirname(__FILE__) . '/defines.php' );
 </div>
 </form>
 <br />
-<form action="index.php" method="post" target="_self">
-    <input name="action" type="hidden" value="task" />
-    <input name="submit" type="submit" value="task" class="btn btn-success btn-lg btn-block" />
-</form>
+<p><a href="task.php" target="_blank" class="btn btn-success btn-lg btn-block">task.php</a></p>
 </div>
 </div>
 <p><a href="cron.php" target="_blank" class="btn btn-default btn-block">cron.php</a></p>
 <p><a href="index.php" target="_self" class="btn btn-default btn-block">index.php</a></p>
-<p><a href="<?php echo $config->csv; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->csv; ?></a></p>
+<p><a href="<?php echo $config->csv; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->csv; ?> (сперва выполните  clear_xls+import_xls+export_csv)</a></p>
 <p><a href="<?php echo $config->xls; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->xls; ?></a></p>
 
 </body>

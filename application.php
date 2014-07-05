@@ -54,21 +54,21 @@ class JApp {
 		$queue = $this->db->fetch_single($result);
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE);
 		$queue_total = $this->db->fetch_single($result);
-		echo "<pre>Image queue: <b>$queue/$queue_total</b></pre>";
+		echo "<pre>Image queue: <b>$queue/$queue_total</b> - $queue картинок в очереди ожидает загрузки , $queue_total - всего известных ссылок на картинки с сайта</pre>";
 		
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime));
 		$queue = $this->db->fetch_single($result);
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE);
 		$queue_total = $this->db->fetch_single($result);
-		echo "<pre>Page queue: <b>$queue/$queue_total</b></pre>";
+		echo "<pre>Page queue: <b>$queue/$queue_total</b> - $queue страниц в очереди ожидает загрузки, $queue_total – всего известных ссылок на страницы сайта</pre>";
 		
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_URL );
 		$count = $this->db->fetch_single($result);
-		echo "<pre>Url records downloaded: <b>$count</b></pre>";
+		echo "<pre>Url records downloaded: <b>$count</b> - количество карточек товаров уже имеется в базе данных по результатам парсинга страниц сайта</pre>";
 		
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_XLS );
 		$count = $this->db->fetch_single($result);
-		echo "<pre>Xls records downloaded: <b>$count</b></pre>";
+		echo "<pre>Xls records downloaded: <b>$count</b> - количество загруженных строк из xls файла</pre>";
 		$this->db->disconnect();
 	}
 	

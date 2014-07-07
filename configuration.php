@@ -122,12 +122,10 @@ class JConfig {
 	public $urlkeys = array( // Перечень полей первичного ключа
 		'productID',
 		'product_name',
-		'product_price'
 	);
 	public $xlskeys = array( // Перечень полей первичного ключа
 		'Column1',
 		'Column2',
-		'Column11'
 	);
 	public $csvfields = array( // Список выгружаемых полей
 		'Артикул'=>'Column1',

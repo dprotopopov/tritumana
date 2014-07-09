@@ -362,6 +362,7 @@ class JApp {
 			$fields = array(); foreach($this->config->xlsfields as $xlsfield=>$values) $fields[$xlsfield] = safe(trim(eval($values[1])));
 			$this->db->query('REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($fields)) . ') VALUES ("' . implode('","',array_values($fields)) . '")');
 		}
+		$this->db->query('DELETE FROM ' . $this->config->dbprefix . TABLE_XLS . ' WHERE ' . 'Column11' . '="' . '' . '"');
 		$this->db->disconnect();
 		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 		error_reporting(E_ERROR | E_PARSE);

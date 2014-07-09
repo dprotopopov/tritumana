@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dwsync>
-<file name="application.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130490265015761419" remote="130490265070000000" Dst="0" />
-<file name="configuration.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130490567869306545" remote="130490568040000000" Dst="0" />
+<file name="application.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130493639274335448" remote="130493639400000000" Dst="0" />
+<file name="configuration.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130493677615472087" remote="130493677780000000" Dst="0" />
 <file name="cron.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130490594923143339" remote="130490595240000000" Dst="0" />
 <file name="database.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130487707197498533" remote="130488931200000000" Dst="0" />
 <file name="defines.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130486610686367294" remote="130488931210000000" Dst="0" />

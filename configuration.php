@@ -46,12 +46,12 @@ class JConfig {
 		'category2'=>array('varchar(100)','(//div[@class="nav"]//a)[2]/text()','/.*/i','$0'),
 		'category3'=>array('varchar(100)','(//div[@class="nav"]//a)[3]/text()','/.*/i','$0'),
 		'category4'=>array('varchar(100)','(//div[@class="nav"]//a)[4]/text()','/.*/i','$0'),
-		'image1'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[1]/..//@href','/.*/i','$0'),
-		'image2'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[2]/..//@href','/.*/i','$0'),
-		'image3'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[3]/..//@href','/.*/i','$0'),
-		'image4'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[4]/..//@href','/.*/i','$0'),
-		'image5'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[5]/..//@href','/.*/i','$0'),
-		'image6'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img)[6]/..//@href','/.*/i','$0'),
+		'image1'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img/../@img_picture|//div[@class="cpt_product_images"]//img/../@href[contains(.,"picture")]|//div[@class="cpt_product_images"]//img/@src)[1]','/.*/i','$0'),
+		'image2'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img/../@img_picture|//div[@class="cpt_product_images"]//img/../@href[contains(.,"picture")]|//div[@class="cpt_product_images"]//img/@src)[2]','/.*/i','$0'),
+		'image3'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img/../@img_picture|//div[@class="cpt_product_images"]//img/../@href[contains(.,"picture")]|//div[@class="cpt_product_images"]//img/@src)[3]','/.*/i','$0'),
+		'image4'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img/../@img_picture|//div[@class="cpt_product_images"]//img/../@href[contains(.,"picture")]|//div[@class="cpt_product_images"]//img/@src)[4]','/.*/i','$0'),
+		'image5'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img/../@img_picture|//div[@class="cpt_product_images"]//img/../@href[contains(.,"picture")]|//div[@class="cpt_product_images"]//img/@src)[5]','/.*/i','$0'),
+		'image6'=>array('varchar(100)','(//div[@class="cpt_product_images"]//img/../@img_picture|//div[@class="cpt_product_images"]//img/../@href[contains(.,"picture")]|//div[@class="cpt_product_images"]//img/@src)[6]','/.*/i','$0'),
 		'translit'=>array('varchar(100)','//div[@class="cpt_maincontent"]//form[@action]//@action','/(([^\/]*)\/)*$/i','$2'),
 		'basePrice'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Баз. опт:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
 		'price1'=>array('varchar(50)','//div[@class="cpt_product_params_fixed"]//td[contains(.,"Опт1:")]/following-sibling::td/b/text()','/\D*(\d+).*/i','$1'),
@@ -117,7 +117,6 @@ class JConfig {
 	public $jointype = 'LEFT JOIN'; 
 	public $joins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
 		'Outline3'=>'product_name',
-		'Column11'=>'product_price'
 	);
 	public $urlkeys = array( // Перечень полей первичного ключа
 		'productID',

@@ -14,6 +14,18 @@ function unparse_url($parsed_url, $defaults) {
   $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : ''; 
   return "$scheme$user$pass$host$port$path$query$fragment"; 
 }
+
 function safe($value){ 
-   return addslashes(mysql_real_escape_string(str_replace ('"',"'",$value))); 
+   return addslashes($value); 
 } 
+
+function unsafe($value){ 
+   return $value; 
+} 
+
+// Recursively convert an object to an array
+function object_to_array($obj) {
+    if(is_object($obj)) $obj = (array) $obj;
+	if(is_array($obj)) { $new = array(); foreach($obj as $key => $val) $new[$key] = object_to_array($val); return $new; }
+	return $obj;
+}

@@ -19,4 +19,23 @@
 <file name="Style.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926090000000" Dst="0" />
 <file name="Worksheet.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926220000000" Dst="0" />
 <file name="WorksheetIterator.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926220000000" Dst="0" />
+<file name="Autoloader.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="CachedObjectStorageFactory.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Cell.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Calculation.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Chart.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Comment.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DocumentProperties.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DocumentSecurity.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Exception.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="HashTable.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="IComparable.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="IOFactory.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="NamedRange.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="RichText.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Settings.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="ReferenceHelper.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Style.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="WorksheetIterator.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Worksheet.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 </dwsync>

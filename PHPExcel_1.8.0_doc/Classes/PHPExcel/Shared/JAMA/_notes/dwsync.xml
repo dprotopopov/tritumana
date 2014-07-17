@@ -7,4 +7,11 @@
 <file name="Matrix.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488925830000000" Dst="0" />
 <file name="QRDecomposition.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488925840000000" Dst="0" />
 <file name="SingularValueDecomposition.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488925840000000" Dst="0" />
+<file name="CHANGELOG.TXT" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="CholeskyDecomposition.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="EigenvalueDecomposition.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="LUDecomposition.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Matrix.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="QRDecomposition.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="SingularValueDecomposition.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 </dwsync>

@@ -16,4 +16,20 @@
 <file name="MathTrig.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488924890000000" Dst="0" />
 <file name="Statistical.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488924890000000" Dst="0" />
 <file name="TextData.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488924900000000" Dst="0" />
+<file name="Database.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Exception.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DateTime.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="ExceptionHandler.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="FormulaParser.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="FormulaToken.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Engineering.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Financial.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="functionlist.txt" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Functions.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Logical.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="LookupRef.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="MathTrig.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="TextData.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Statistical.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Function.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 </dwsync>

@@ -6,4 +6,10 @@
 <file name="DefaultValueBinder.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488924950000000" Dst="0" />
 <file name="Hyperlink.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488924950000000" Dst="0" />
 <file name="IValueBinder.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488924950000000" Dst="0" />
+<file name="AdvancedValueBinder.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DataType.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DataValidation.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DefaultValueBinder.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Hyperlink.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="IValueBinder.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 </dwsync>

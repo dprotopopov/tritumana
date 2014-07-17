@@ -1,0 +1,40 @@
+////////////////////////////////////////////
+//
+// Отображение элемента у границы окна браузера в пределах размера родительского элемента
+// Пытаемся разместить элемент в середине экрана
+//
+// Разработчик Дмитрий Протопопов http://protopopov.ru
+// RBA DESIGN INTERNATIONAL LLC http://rbadesign.us
+//
+// Используются нижеследующие компоненты:
+// jQuery http://jquery.com
+// cssParentSelector https://github.com/Idered/cssParentSelector
+/*
+Порядок использования:
+1. Установить у нужного элемента класс "left-border-element"
+2. Или установить у нужного элемента класс "right-border-element"
+3. Или установить у нужного элемента класс "top-border-element"
+4. Или установить у нужного элемента класс "bottom-border-element"
+
+Пример:
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="jQuery.cssParentSelector.js"></script>
+	<script src="jquery.windowBorderElement.js"></script>
+	<link href="jquery.windowBorderElement.css" rel="stylesheet" type="text/css" />
+	
+<div class="left-border-element">
+Hello world
+</div>
+*/
+////////////////////////////////////////////
+
+.left-border-element,.right-border-element,.top-border-element,.bottom-border-element {
+display: inline-block;
+position:absolute;
+}
+*!>.left-border-element,*!>.right-border-element,*!>.top-border-element,*!>.bottom-border-element {
+position:relative;
+}
+body {
+position:relative;
+}

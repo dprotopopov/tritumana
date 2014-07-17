@@ -5,13 +5,9 @@
 // Разрабочик dmitry@protopopov.ru
 // Использование: cd <рабочий каталог> & php -f cron.php
 require_once( dirname(__FILE__) . '/configuration.php' );
-require_once( dirname(__FILE__) . '/database.php' );
 require_once( dirname(__FILE__) . '/application.php' );
-require_once( dirname(__FILE__) . '/functions.php' );
-require_once( dirname(__FILE__) . '/defines.php' );
 
 	$config = new JConfig();
-	$db = new JDatabase();
 	$app = new JApp();
 	
 ?>

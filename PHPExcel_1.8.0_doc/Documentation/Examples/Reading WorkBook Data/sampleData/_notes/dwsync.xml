@@ -3,4 +3,7 @@
 <file name="example1.xls" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488928070000000" Dst="0" />
 <file name="example1.xlsx" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488928070000000" Dst="0" />
 <file name="example2.xls" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488928080000000" Dst="0" />
+<file name="example1.xls" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498322400000000" Dst="0" />
+<file name="example1.xlsx" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498322400000000" Dst="0" />
+<file name="example2.xls" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498322400000000" Dst="0" />
 </dwsync>

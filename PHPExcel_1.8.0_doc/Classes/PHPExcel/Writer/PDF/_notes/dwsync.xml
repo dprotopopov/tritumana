@@ -4,4 +4,8 @@
 <file name="DomPDF.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926370000000" Dst="0" />
 <file name="mPDF.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926380000000" Dst="0" />
 <file name="tcPDF.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926380000000" Dst="0" />
+<file name="Core.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="DomPDF.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="mPDF.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="tcPDF.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 </dwsync>

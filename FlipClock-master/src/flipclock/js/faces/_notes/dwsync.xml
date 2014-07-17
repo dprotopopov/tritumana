@@ -6,4 +6,10 @@
 <file name="minutecounter.js" server="31.170.164.22:65002/public_html/price_scripts/" local="130475449940000000" remote="130488924560000000" Dst="0" />
 <file name="twelvehourclock.js" server="31.170.164.22:65002/public_html/price_scripts/" local="130475449940000000" remote="130488924570000000" Dst="0" />
 <file name="twentyfourhourclock.js" server="31.170.164.22:65002/public_html/price_scripts/" local="130475449940000000" remote="130488924570000000" Dst="0" />
+<file name="counter.js" server="ftp.aaabbbccc.esy.es" local="130475449940000000" remote="130498300800000000" Dst="0" />
+<file name="dailycounter.js" server="ftp.aaabbbccc.esy.es" local="130475449940000000" remote="130498300800000000" Dst="0" />
+<file name="twelvehourclock.js" server="ftp.aaabbbccc.esy.es" local="130475449940000000" remote="130498300800000000" Dst="0" />
+<file name="twentyfourhourclock.js" server="ftp.aaabbbccc.esy.es" local="130475449940000000" remote="130498300800000000" Dst="0" />
+<file name="hourlycounter.js" server="ftp.aaabbbccc.esy.es" local="130475449940000000" remote="130498300800000000" Dst="0" />
+<file name="minutecounter.js" server="ftp.aaabbbccc.esy.es" local="130475449940000000" remote="130498300800000000" Dst="0" />
 </dwsync>

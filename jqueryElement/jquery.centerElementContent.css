@@ -1,0 +1,42 @@
+////////////////////////////////////////////
+//
+// Центровка содерхимого элемента по горизонтали и вертикали
+//
+// Разработчик Дмитрий Протопопов http://protopopov.ru
+// RBA DESIGN INTERNATIONAL LLC http://rbadesign.us
+//
+// Используются нижеследующие компоненты:
+// jQuery http://jquery.com
+// cssParentSelector https://github.com/Idered/cssParentSelector
+/*
+Порядок использования:
+1. Установить у нужного элемента класс "center-element-content"
+Если к данному элементу применяется CSS с опцией position, то изменить опцию position на !important
+
+Пример:
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="jquery.centerElementContent.js"></script>
+	<link href="jquery.centerElementContent.css" rel="stylesheet" type="text/css" />
+	
+<div class="center-element-content">
+<p>Row1</p>
+<p>Row2</p>
+</div>
+*/
+////////////////////////////////////////////
+
+.center-element-content>div {
+display: inline-block;
+position:relative;
+margin-left:auto;  
+margin-right:auto;  
+margin-bottom:auto; 
+top:auto; 
+left:auto; 
+right:auto; 
+bottom:auto; 
+}
+.center-element-content {
+position:relative;
+text-align:center;
+}

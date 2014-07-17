@@ -7,4 +7,11 @@
 <file name="Legend.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488925010000000" Dst="0" />
 <file name="PlotArea.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488925010000000" Dst="0" />
 <file name="Title.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488925030000000" Dst="0" />
+<file name="DataSeries.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DataSeriesValues.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Exception.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Layout.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Legend.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="PlotArea.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Title.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 </dwsync>

@@ -5,14 +5,12 @@
 // Разрабочик dmitry@protopopov.ru
 // Использование: cd <рабочий каталог> & php -f cron.php
 require_once( dirname(__FILE__) . '/configuration.php' );
-require_once( dirname(__FILE__) . '/database.php' );
 require_once( dirname(__FILE__) . '/application.php' );
-require_once( dirname(__FILE__) . '/functions.php' );
-require_once( dirname(__FILE__) . '/defines.php' );
+require_once( dirname(__FILE__) . '/insales.php' );
 
 	$config = new JConfig();
-	$db = new JDatabase();
 	$app = new JApp();
+	$insales = new InSales();
 	
 ?>
 <head>
@@ -57,13 +55,14 @@ Page queue: <strong>0/….</strong><br />
       </div>
     </div>
 	<iframe src="FlipClock-master/examples/localization.html" width="100%" align="middle" scrolling="no"></iframe>
-	<iframe src="info.php" width="100%" height="240" align="middle" scrolling="no"></iframe>
+	<iframe src="info.php" width="100%" height="240" align="middle" scrolling="auto"></iframe>
 <p><a href="index.php" target="_blank" class="btn btn-primary btn-lg" role="button">Learn more</a></p>
 </div>
 </div>
 <?php
 	$app->page_curl_cron();		
 	$app->image_curl_cron();		
+	$insales->cron();		
 ?>
 </body>
 </html>

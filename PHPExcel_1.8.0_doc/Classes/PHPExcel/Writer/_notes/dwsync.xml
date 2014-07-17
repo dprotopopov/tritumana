@@ -8,4 +8,12 @@
 <file name="HTML.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926350000000" Dst="0" />
 <file name="IWriter.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926360000000" Dst="0" />
 <file name="PDF.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926390000000" Dst="0" />
+<file name="Abstract.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="CSV.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Excel2007.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Exception.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="IWriter.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="HTML.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="PDF.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Excel5.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 </dwsync>

@@ -7,4 +7,11 @@
 <file name="Workbook.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926330000000" Dst="0" />
 <file name="Worksheet.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926330000000" Dst="0" />
 <file name="Xf.php" server="31.170.164.22:65002/public_html/price_scripts/" local="130382332260000000" remote="130488926340000000" Dst="0" />
+<file name="BIFFwriter.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Escher.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Font.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Parser.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Workbook.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Xf.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Worksheet.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 </dwsync>

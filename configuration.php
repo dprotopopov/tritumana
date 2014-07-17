@@ -31,6 +31,14 @@ class JConfig {
 //mysql.hostinger.ru
 
 	// Настройки коннекта к базе данных
+//	public $dbtype = 'mysqli'; // Не реализовано
+//	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
+//	public $user = 'u333079267_tir'; // Логин базы данных
+//	public $password = 'q1w2e3r4t5y6'; // Пароль базы данных
+//	public $db = 'u333079267_tri';  // Название базы данных
+//	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
+//	public $persistent = 1;  // Повторно использовать коннект к базе данных
+	
 	public $dbtype = 'mysqli'; // Не реализовано
 	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
 	public $user = 'u266351659_tri'; // Логин базы данных
@@ -55,58 +63,22 @@ class JConfig {
 //	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
 //	public $persistent = 1;  // Повторно использовать коннект к базе данных
 //	
-	// Настройки для InSales
-	// Access Key-1
-	//Идентификатор:	d6db90ca9a04291079db86be4d85d6ba
-	//Пароль:	c4af6e1ea8613a04d19089014ecfaf07
-	//Формат URL:	http://apikey:password@hostname/admin/resource.xml
-	//Пример URL:	http://d6db90ca9a04291079db86be4d85d6ba:c4af6e1ea8613a04d19089014ecfaf07@aaabbbccc.myinsales.ru/admin/orders.xml
-	//Пример URL:	http://d6db90ca9a04291079db86be4d85d6ba:c4af6e1ea8613a04d19089014ecfaf07@aaabbbccc.myinsales.ru/admin/products.json?page=0
-	//Дата подключения:	14.07.2014	
 
-	//Описание для покупателей
-	//Название	xxxyyyzzz
-	//Категория	Расширенная функциональность
-	//Стоимость	
-	//Описание	111111111
-	//Автор	111111111
-	//Контакты	111111111111
-	//Изображение	
-	//Технические параметры
-	//Идентификатор	11111111111
-	//Секрет	71315e8f4d83599d49408533aa9ed8a4
-	//Триальный период	14
-	//URL установки	http://aaabbbccc.esy.es/install.php
-	//URL входа	http://aaabbbccc.esy.es/login.php
-	//URL деинсталяции	http://aaabbbccc.esy.es/uninstall.php
-	//URL карточки товара	
-	//URL карточки заказа		
-
-//	1. Вы создали приложение со следующими настройками:
-//	
-//	идентификатор приложения - myapplogin
-//	секретный ключ приложения - mysecret
-//	урл установки - http://myapp.ru/install
-//	
-//	2. Пользователь магазина test.myinsales.ru (insales_id = 123) нажимает на установку вашего приложения, генерируется случайный token (для примера token123) и идет запрос:
-//	
-//	http://myapp.ru/install?shop=test.myinsales.ru&token=token123&insales_id=123
-//	
-//	При обработке этого запроса у себя вам нужно по токену вычислить пароль и записать его в своей базе для этого магазина, чтобы в дальнейшем слать запросы по API к нему. В данном случае получается такой пароль:
-//	
-//	password = MD5(token + secret_key) = MD5("token123mysecret") = 4c3f4c197336eb97475506e71c839c71
-//	
-//	3. Теперь можно послать запрос по API в магазин:
-//	
-//	http://myapplogin:4c3f4c197336eb97475506e71c839c71@test.myinsales.ru/admin/account.xml
+//	public $my_insales_domain = 'tritumana.myinsales.ru';  // Домен в InSales
+//	// Access Key для сайта
+//	public $insales_api_key = '0dd445ca899ed0c1b37cc2a918a6c225';  // Access Key в InSales
+//	public $insales_password = 'f386964f0dac0a91c1aaad96f54b9fdd';  // Access Key в InSales
 
 	public $my_insales_domain = 'aaabbbccc.myinsales.ru';  // Домен в InSales
-	// Для приложения
-	public $myapplogin = '11111111111'; //	идентификатор приложения - myapplogin
-	public $insales_secret_key = '71315e8f4d83599d49408533aa9ed8a4';  // Секретный ключ приложения в InSales
 	// Access Key для сайта
 	public $insales_api_key = 'd6db90ca9a04291079db86be4d85d6ba';  // Access Key в InSales
 	public $insales_password = 'c4af6e1ea8613a04d19089014ecfaf07';  // Access Key в InSales
+	
+	public $parent_collection_id = 2933878;  // Корневая коллекция на витрине в InSales
+
+	// Для приложения
+	public $myapplogin = '11111111111'; //	идентификатор приложения - myapplogin
+	public $insales_secret_key = '71315e8f4d83599d49408533aa9ed8a4';  // Секретный ключ приложения в InSales
 	
 	// Информация о сайте-доноре
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта (сайт-донор)
@@ -114,7 +86,11 @@ class JConfig {
 	
 	// Локальные файлы и дериктории
 	public $csv = 'opt.csv'; // Название сохраняемого файла CSV
-	public $imagehost = 'http://aaabbbccc.esy.es/'; // Хост для сохранения загруженных изображений (добавояется в качестве превикса к пути картинки
+	
+//	public $imagehost = 'http://tritumana.meximas.com/'; // Хост для сохранения загруженных изображений (добавояется в качестве превикса к пути картинки
+//	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
+	
+	public $imagehost = 'http://aaabbbccc.esy.es/'; // Хост для сохранения загруженных изображений (добавляется в качестве префикса к пути картинки)
 	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
 	
 	// Временные файлы
@@ -421,7 +397,7 @@ class JConfig {
 	*/	
 	public $productfields = array( // Настройки парсинга полей xml
 		'id'=>array('INTEGER','id','id',true,'id'),
-		'categoryId'=>array('INTEGER','category_id','collection_id',true,'category_id'),
+		'collectionId'=>array('INTEGER','collection_id','collection_id',true,'collection_id'),
 		'title'=>array('VARCHAR(100) DEFAULT ""','title','Value11',true,'title'),
 		'htmlTitle'=>array('VARCHAR(100) DEFAULT ""','html_title','Value11',true,'html_title'),
 		'permalink'=>array('VARCHAR(100) DEFAULT ""','permalink','',true,'permalink'),

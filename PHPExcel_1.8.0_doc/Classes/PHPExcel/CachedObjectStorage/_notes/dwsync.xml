@@ -26,4 +26,17 @@
 <file name="Wincache.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 <file name="ICache.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 <file name="MemoryGZip.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="APC.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="CacheBase.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="DiscISAM.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="ICache.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Igbinary.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Memcache.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="MemoryGZip.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="MemorySerialized.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="PHPTemp.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="SQLite.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Wincache.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Memory.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="SQLite3.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
 </dwsync>

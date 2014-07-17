@@ -32,4 +32,20 @@
 <file name="TextData.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 <file name="Statistical.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 <file name="Function.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="Database.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="DateTime.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="ExceptionHandler.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Engineering.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="FormulaParser.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Financial.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Function.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="functionlist.txt" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Functions.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="LookupRef.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="MathTrig.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Statistical.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Exception.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="FormulaToken.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="TextData.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Logical.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
 </dwsync>

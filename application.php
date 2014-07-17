@@ -22,7 +22,7 @@ class JApp {
 	
 	private function drop_table_if_exists(){
 		$queries = array();
-		foreach(array(TABLE_COLLECTION,TABLE_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL,TABLE_PAGE,TABLE_IMAGE,TABLE_INSALES,TABLE_INSALES_IMAGE,TABLE_SETTINGS) as $table) $queries[] = 'DROP TABLE IF EXISTS ' . $this->config->dbprefix . $table;
+		foreach(array(TABLE_COLLECTION,TABLE_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL,TABLE_PAGE,TABLE_IMAGE,TABLE_INSALES_PRODUCT,TABLE_INSALES_IMAGE,TABLE_SETTINGS) as $table) $queries[] = 'DROP TABLE IF EXISTS ' . $this->config->dbprefix . $table;
 		return $queries;
 	}
 	private function create_table_if_not_exists(){
@@ -71,7 +71,15 @@ class JApp {
 				FIELD_VALUE . ' VARCHAR(100)',
 				'PRIMARY KEY (' . FIELD_NAME . ')'
 			),
-			TABLE_INSALES => array(
+			TABLE_INSALES_COLLECTION => array(
+				FIELD_METHOD . ' VARCHAR(50)',
+				FIELD_PATH . ' VARCHAR(100)',
+				FIELD_PARAMS . ' TEXT',
+				FIELD_STARTED . ' INTEGER',
+				TABLE_COLLECTION . '_' . FIELD_TITLE . ' VARCHAR(100)',
+				'PRIMARY KEY (' . TABLE_COLLECTION . '_' . FIELD_TITLE . ')'
+			),
+			TABLE_INSALES_PRODUCT => array(
 				FIELD_METHOD . ' VARCHAR(50)',
 				FIELD_PATH . ' VARCHAR(100)',
 				FIELD_PARAMS . ' TEXT',
@@ -98,8 +106,8 @@ class JApp {
 			$fields = $table . 'fields';
 			foreach($this->config->$fields as $field=>$values) $specifications[$table][] = $field . ' ' . $values[0];
 		}
-		foreach($insaleskeys as $field=>$values) $specifications[TABLE_INSALES][] = $field . ' ' . $values[0];
-		foreach($specifications as $table=>$values) $queries[] = 'CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . $table . '(' . implode(',', $values) . ')';
+		foreach($insaleskeys as $field=>$values) $specifications[TABLE_INSALES_PRODUCT][] = $field . ' ' . $values[0];
+		foreach($specifications as $table=>$values) $queries[] = 'CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . $table . '(' . implode(',', $values) . ') CHARACTER SET utf8 COLLATE utf8_general_ci';
 		return $queries;
 	}
 	
@@ -143,7 +151,7 @@ class JApp {
 		$this->db->free_result($result);
 		echo "<pre>Page queue: <b>$queue/$queue_total</b> - $queue страниц в очереди ожидает загрузки, $queue_total – всего известных ссылок на страницы сайта</pre>";
 		
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_INSALES);
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT);
 		$queue = $this->db->fetch_single($result);
 		$this->db->free_result($result);
 		echo "<pre>InSales queue: <b>$queue</b> - $queue карточек товаров в очереди ожидает загрузки на InSales</pre>";
@@ -417,10 +425,21 @@ class JApp {
 	public function clear_url(){ $this->clear_table(TABLE_URL); }
 	public function clear_page(){ $this->clear_table(TABLE_PAGE); }
 	public function clear_image(){ $this->clear_table(TABLE_IMAGE); }
-	public function clear_insales(){ $this->clear_table(TABLE_INSALES); }
 	public function clear_product(){ $this->clear_table(TABLE_PRODUCT); }
 	public function clear_collection(){ $this->clear_table(TABLE_COLLECTION); }
 	public function clear_settings(){ $this->clear_table(TABLE_SETTINGS); }
+	public function clear_insales(){ 
+		$start = microtime(true);
+		set_time_limit(0);
+		$this->db->connect();
+		$queries = array();
+		foreach(array(TABLE_INSALES_COLLECTION,TABLE_INSALES_PRODUCT,TABLE_INSALES_IMAGE) as $table) $queries[]='TRUNCATE ' . $this->config->dbprefix . $table;
+		$result = $this->db->multi_query(implode(';',$queries));
+		$this->db->free_multi_result($result);
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
+	}
 	
 		
 	public function import_url(){

@@ -16,4 +16,12 @@
 <file name="HTML.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 <file name="PDF.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 <file name="Excel5.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Abstract.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="CSV.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Exception.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Excel2007.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="PDF.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="HTML.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Excel5.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500425400000000" Dst="0" />
+<file name="IWriter.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500429600000000" Dst="0" />
 </dwsync>

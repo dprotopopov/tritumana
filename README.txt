@@ -17,3 +17,41 @@ cron.php также можно открыть в браузере - его страница будет обновляться, запуск
 Системные требования
 
 PHP 5.3 с поддержкой cURL.
+
+
+Инструкция по установке
+
+1. Зайдите в магазин InSales
+	2.1. Перейдите на вкладку Приложения/Разработчикам
+	2.2. Создайте ключ доступа
+Например
+Access Key-1  Del_ico
+Идентификатор:	d6db90ca9a04291079db86be4d85d6ba
+Пароль:	c4af6e1ea8613a04d19089014ecfaf07
+Формат URL:	http://apikey:password@hostname/admin/resource.xml
+Пример URL:	http://d6db90ca9a04291079db86be4d85d6ba:c4af6e1ea8613a04d19089014ecfaf07@aaabbbccc.myinsales.ru/admin/orders.xml
+Дата подключения:	14.07.2014
+
+2. Разместите все файлы из пакета на хостинге
+3. Создайте базу данных MySQL
+4. Отредактируйте файл configuration.php
+	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ'; // Название загружаемого сайта-донора
+	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
+	public $user = 'u266351659_tri'; // Логин базы данных
+	public $password = 'dSmOfOyH1b'; // Пароль базы данных
+	public $db = 'u266351659_tri';  // Название базы данных
+	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
+	public $my_insales_domain = 'aaabbbccc.myinsales.ru';  // Домен в InSales
+	// Access Key для сайта
+	public $insales_api_key = 'd6db90ca9a04291079db86be4d85d6ba';  // Access Key в InSales
+	public $insales_password = 'c4af6e1ea8613a04d19089014ecfaf07';  // Access Key в InSales
+	public $imagehost = 'http://aaabbbccc.esy.es/'; // Хост для сохранения загруженных изображений (добавляется в качестве префикса к пути картинки
+	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
+5. Откройте страницу index.php на хостинге
+	5.1. Выберите пункт rebuild_database и нажмите кнопку Go!
+6. Откройте панель управления хостингом и перейдите в пункт Дополнительно/Cron-Задачи 
+	6.1. Добавьте * * * * *	/usr/bin/php /home/u266351659/cron.php - выполнение cron.php каждую минуту
+	6.1. Добавьте 0 0,12 * * *	/usr/bin/php /home/u266351659/task2.php - выполнение task2.php два раза в день
+7. Установка программы завершена
+
+

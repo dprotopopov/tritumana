@@ -26,4 +26,17 @@
 <file name="OOCalc.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 <file name="IReader.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
 <file name="Excel5.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498321200000000" Dst="0" />
+<file name="Abstract.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="CSV.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="DefaultReadFilter.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Excel2003XML.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Excel2007.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Exception.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="HTML.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="IReadFilter.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Excel5.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="SYLK.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="Gnumeric.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="IReader.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
+<file name="OOCalc.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424800000000" Dst="0" />
 </dwsync>

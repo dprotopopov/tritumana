@@ -12,4 +12,10 @@
 <file name="DefaultValueBinder.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 <file name="Hyperlink.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
 <file name="IValueBinder.php" server="ftp.aaabbbccc.esy.es" local="130382332260000000" remote="130498320600000000" Dst="0" />
+<file name="DataType.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="DataValidation.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="Hyperlink.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="IValueBinder.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="AdvancedValueBinder.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500418200000000" Dst="0" />
+<file name="DefaultValueBinder.php" server="ftp.tritumana.meximas.com" local="130382332260000000" remote="130500424200000000" Dst="0" />
 </dwsync>

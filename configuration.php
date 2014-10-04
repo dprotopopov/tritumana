@@ -2,6 +2,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
 require_once( dirname(__FILE__) . '/defines.php' );
+require_once( dirname(__FILE__) . '/factory.php' );
 
 class JConfig {
 	public $sitename = 'ТУРИСТИЧЕСКОЕ СНАРЯЖЕНИЕ'; // Название загружаемого сайта-донора
@@ -19,67 +20,51 @@ class JConfig {
 	public $parallel = '0'; // Флаг использования параллельных процессов
 	public $imagecronlimit = 20; // Количество загружаемых изображений с сайта-донора при одном вызове cron
 	public $pagecronlimit = 20; // Количество загружаемых страниц с сайта-донора при одном вызове cron
-	public $insalescronlimit = 10; // Количество выгружаемых карточек товара на InSales при одном вызове cron
-	
-	// Периодичность обновления информации в базе данных
-	// время в секундах, когда информация о странице на сайте-доноре в базе считается устаревшей и подлежит новой загрузке
-	// сейчас указано 100 часов = 360000 секунд
-	public $pageupdatetime = 360000; 
+	public $pageupdatetime = 360000; // Периодичность обновления информации в базе данных
+
+	public $insalescronlimit = 20; // Количество выгружаемых карточек товара на InSales при одном вызове cron
+	public $insalesperpage = 20; // Количество загружаемых карточек товаров из InSales на одной странице при одном вызове cron
+	public $insalespagecount = 10; // Количество загружаемых страниц карточек товаров из InSales при одном вызове cron
 	public $insalesexpiretime = 360000; 
 	
-//База данных создана. Для пользователя u266351659_tri установлен пароль dSmOfOyH1b
-//mysql.hostinger.ru
-
+	public $magentocronlimit = 20; // Количество выгружаемых карточек товара на InSales при одном вызове cron
+	public $magentocronperiod = 100; 
+	public $magentoexpiretime = 360000; 
+	
 	// Настройки коннекта к базе данных
-//	public $dbtype = 'mysqli'; // Не реализовано
+	public $dbtype = 'mysqli'; // Используется тип соединения mysqli, но параметр не настраиваемый
+	public $host = 'localhost'; // Сервер базы данных
+	public $user = 'vrulin_db'; // Логин базы данных
+	public $password = '3tum@#@_7ds!'; // Пароль базы данных
+	public $db = 'tritumana';  // Название базы данных
+	public $dbprefix = 'tritumana_';  // Префикс таблиц в базе данных
+	public $persistent = 1;  // Повторно использовать коннект к базе данных
+	
+//	public $dbtype = 'mysqli'; // Используется тип соединения mysqli, но параметр не настраиваемый
 //	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
 //	public $user = 'u333079267_tir'; // Логин базы данных
 //	public $password = 'q1w2e3r4t5y6'; // Пароль базы данных
 //	public $db = 'u333079267_tri';  // Название базы данных
-//	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
+//	public $dbprefix = 'tritumana_';  // Префикс таблиц в базе данных
 //	public $persistent = 1;  // Повторно использовать коннект к базе данных
 	
-	public $dbtype = 'mysqli'; // Не реализовано
-	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
-	public $user = 'u266351659_tri'; // Логин базы данных
-	public $password = 'dSmOfOyH1b'; // Пароль базы данных
-	public $db = 'u266351659_tri';  // Название базы данных
-	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
-	public $persistent = 1;  // Повторно использовать коннект к базе данных
-	
-//	public $dbtype = 'mysqli'; // Не реализовано
-//	public $host = 'localhost'; // Сервер базы данных
-//	public $user = 'tritumana'; // Логин базы данных
-//	public $password = '123456'; // Пароль базы данных
-//	public $db = 'tritumana';  // Название базы данных
-//	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
-//	public $persistent = 1;  // Повторно использовать коннект к базе данных
-	
-//	public $dbtype = 'mysqli'; // Не реализовано
-//	public $host = 'mysql.hostinger.ru'; // Сервер базы данных
-//	public $user = 'u437594118_tri'; // Логин базы данных
-//	public $password = 'q1w2e3r4t5y6'; // Пароль базы данных
-//	public $db = 'u437594118_tri';  // Название базы данных
-//	public $dbprefix = 'tursportopt_';  // Префикс таблиц в базе данных
-//	public $persistent = 1;  // Повторно использовать коннект к базе данных
-//	
-
-//	public $my_insales_domain = 'tritumana.myinsales.ru';  // Домен в InSales
-//	// Access Key для сайта
-//	public $insales_api_key = '0dd445ca899ed0c1b37cc2a918a6c225';  // Access Key в InSales
-//	public $insales_password = 'f386964f0dac0a91c1aaad96f54b9fdd';  // Access Key в InSales
-
-	public $my_insales_domain = 'aaabbbccc.myinsales.ru';  // Домен в InSales
-	// Access Key для сайта
-	public $insales_api_key = 'd6db90ca9a04291079db86be4d85d6ba';  // Access Key в InSales
-	public $insales_password = 'c4af6e1ea8613a04d19089014ecfaf07';  // Access Key в InSales
-	
-	public $parent_collection_id = 2933878;  // Корневая коллекция на витрине в InSales
-
-	// Для приложения
-	public $myapplogin = '11111111111'; //	идентификатор приложения - myapplogin
+	// Настройки InSales
+	public $insales_enabled = '0'; 
+	public $my_insales_domain = 'tritumana.myinsales.ru';  // Домен в InSales
+	public $insales_api_key = '0dd445ca899ed0c1b37cc2a918a6c225';  // Access Key в InSales
+	public $insales_password = 'f386964f0dac0a91c1aaad96f54b9fdd';  // Access Key в InSales
+	public $insales_applogin = 'tritumana'; //	идентификатор приложения - insales_applogin
 	public $insales_secret_key = '71315e8f4d83599d49408533aa9ed8a4';  // Секретный ключ приложения в InSales
-	
+	public $insales_root_collection_id = 2933878;  // Корневая коллекция на витрине в InSales
+
+	// Настройки Magento
+	public $magento_enabled = '1'; 
+	public $my_magento_domain = 'tritumana.ru';  // Домен в Magento
+	public $magento_api_url = 'http://tritumana.ru/api/v2_soap/?wsdl';  // Host в Magento
+	public $magento_api_user = 'user';  // User в Magento
+	public $magento_api_key = '0dd445ca899ed0c1b37cc2a918a6c225';  // Access Key в Magento
+	public $magento_root_category_id = 2;  // ID of the parent category в Magento
+
 	// Информация о сайте-доноре
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта (сайт-донор)
 	public $xls = 'http://www.tursportopt.ru/price/opt.xls'; // Адрес загружаемой таблицы Excel с сайта-донора 
@@ -87,16 +72,13 @@ class JConfig {
 	// Локальные файлы и дериктории
 	public $csv = 'opt.csv'; // Название сохраняемого файла CSV
 	
-//	public $imagehost = 'http://tritumana.meximas.com/'; // Хост для сохранения загруженных изображений (добавояется в качестве превикса к пути картинки
-//	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
-	
-	public $imagehost = 'http://aaabbbccc.esy.es/'; // Хост для сохранения загруженных изображений (добавляется в качестве префикса к пути картинки)
+	public $imagehost = 'http://tritumana.ru/'; // Хост для сохранения загруженных изображений (добавояется в качестве превикса к пути картинки
 	public $imagedir = 'images/'; // Директория для сохранения загруженных изображений
 	
 	// Временные файлы
-	public $imagetempfilename = 'image' ; // Префикс имени временных загруженных файлов изображений
-	public $xlstempfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
-	public $csvtempfilename = 'opt'; // Префикс имени временных файлов CSV
+	public $tempimagefilename = IMAGE ; // Префикс имени временных загруженных файлов изображений
+	public $tempxlsfilename = 'opt'; // Префикс имени временных загруженных файлов Excel
+	public $tempcsvfilename = 'opt'; // Префикс имени временных файлов CSV
 	
 	/*
 		Структура записи
@@ -107,7 +89,7 @@ class JConfig {
 			PCRE preg_replace replacement - The string or an array with strings to replace. http://php.net/manual/en/function.preg-replace.php
 		)
 	*/
-	public $urlfields = array( // Настройки парсинга полей страниц сайта
+	public $url_fields = array( // Настройки парсинга полей страниц сайта
 		'productID'=>array('VARCHAR(100) DEFAULT ""',
 			'//div[@class="cpt_maincontent"]//input[@name="productID"]/text()',
 			'/.*/i','$0'),
@@ -252,7 +234,7 @@ class JConfig {
 			$outline - массив номеров строк в соответствии с иерархическим представлением данных на листе
 			$row - номер текущей строки в файле
 	*/	
-	public $xlsfields = array( // Настройки парсинга колонок таблицы Excel
+	public $xls_fields = array( // Настройки парсинга колонок таблицы Excel
 		'Outline1'=>array('VARCHAR(100) DEFAULT ""','return $sheet->getCellByColumnAndRow(2,$outline[1])->getValue();'),
 		'Outline2'=>array('VARCHAR(100) DEFAULT ""','return $sheet->getCellByColumnAndRow(2,$outline[2])->getValue();'),
 		'Outline3'=>array('VARCHAR(100) DEFAULT ""','return $sheet->getCellByColumnAndRow(2,$outline[3])->getValue();'),
@@ -286,23 +268,23 @@ class JConfig {
 	// A JOIN B ON … - находятся записи где для A существует в В и для B существует в A
 	// A LEFT JOIN B ON … - находятся ВСЕ записи A и для B существует в A
 	// и т.д. в соответствии с синтаксисом sql
-	public $csvjointype = 'LEFT JOIN'; 
+	public $csv_join_type = 'LEFT JOIN'; 
 	/*
 		Структура записи
 		Имя колонки XLS файла => Имя карточки товара с сайта-донора
 	*/
-	public $csvjoins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
+	public $csv_joins = array( // Перечень полей для сопоставления записей из таблицы и с сайта
 		'Outline3'=>'product_name',
 	);
-	public $urlkeys = array( // Перечень полей первичного ключа
+	public $url_keys = array( // Перечень полей первичного ключа
 		'productID',
 		'product_name',
 	);
-	public $xlskeys = array( // Перечень полей первичного ключа
+	public $xls_keys = array( // Перечень полей первичного ключа
 		'Column1',
 		'Column2',
 	);
-	public $csvkeys = array( // Перечень полей первичного ключа
+	public $csv_keys = array( // Перечень полей первичного ключа
 		'Value1',
 		'Value11',
 	);
@@ -318,7 +300,7 @@ class JConfig {
 			$outline - массив номеров строк в соответствии с иерархическим представлением данных на листе
 			$row - номер текущей строки в файле
 	*/	
-	public $csvfields = array( // Список выгружаемых полей
+	public $csv_fields = array( // Список выгружаемых полей
 		'Value1'=>array('VARCHAR(20) DEFAULT ""','Артикул','Column1'),
 		'Value2'=>array('VARCHAR(100) DEFAULT ""','Категория','Outline1'),
 		'Value3'=>array('VARCHAR(100) DEFAULT ""','Подкатегория 1','Outline2'),
@@ -370,13 +352,17 @@ class JConfig {
 		a.	Проверка идёт по названию и по Артиклю (должна быть возможность выбирать в конфиге 
 		по какому из этих полей проверять или по обоим)
 	*/
-	public $productjointypes = array('LEFT JOIN','RIGHT JOIN'); 
+	public $product_join_types = array('LEFT JOIN','RIGHT JOIN'); 
 	/*
 		Структура записи
 		Имя колонки товара InSales => Имя колонки CSV файла
 	*/
-	public $productjoins = array( // Перечень полей для сопоставления записей
+	public $insales_product_joins = array( // Перечень полей для сопоставления записей
 		'title'=>'Value11',
+		'sku'=>'Value1',
+	);
+	public $magento_product_joins = array( // Перечень полей для сопоставления записей
+		'name'=>'Value11',
 		'sku'=>'Value1',
 	);
 	/*
@@ -393,25 +379,25 @@ class JConfig {
 		)
 		
 			Признак новой записи ($join->id)
-			Специальное поле $join->' . TABLE_COLLECTION . '_' . FIELD_ID . '
+			Специальное поле $join->' . implode('_',array(COLLECTION,ID)) . '
 	*/	
-	public $productfields = array( // Настройки парсинга полей xml
-		'id'=>array('INTEGER','id','id',true,'id'),
-		'collectionId'=>array('INTEGER','collection_id','collection_id',true,'collection_id'),
-		'title'=>array('VARCHAR(100) DEFAULT ""','title','Value11',true,'title'),
-		'htmlTitle'=>array('VARCHAR(100) DEFAULT ""','html_title','Value11',true,'html_title'),
-		'permalink'=>array('VARCHAR(100) DEFAULT ""','permalink','',true,'permalink'),
-		'sku'=>array('VARCHAR(20) DEFAULT ""','variants/0/sku','Value1',true,'variants_attributes/0/sku'),
-		'variantId'=>array('VARCHAR(50) DEFAULT ""','variants/0/id','',true,'variants_attributes/0/id'),
-		'variantTitle'=>array('VARCHAR(50) DEFAULT ""','variants/0/title','Value11',true,'variants_attributes/0/title'),
-		'costPrice'=>array('DECIMAL(18,2)','variants/0/cost_price','Value15',true,'variants_attributes/0/cost_price'),
-		'quantity'=>array('INTEGER','variants/0/quantity','Value14',true,'variants_attributes/0/quantity'),
-		'oldPrice'=>array('DECIMAL(18,2)','variants/0/old_price','Value13',true,'variants_attributes/0/old_price'),
+	public $insales_product_fields = array( // Настройки парсинга полей
+		'id'=>array('INTEGER','id','id',false,'id'),
+		'collectionId'=>array('INTEGER','collection_id','collection_id',false,'collection_id'),
+		'title'=>array('VARCHAR(100) DEFAULT ""','title','Value11',false,'title'),
+		'htmlTitle'=>array('VARCHAR(100) DEFAULT ""','html_title','Value11',false,'html_title'),
+		'permalink'=>array('VARCHAR(100) DEFAULT ""','permalink','',false,'permalink'),
+		'sku'=>array('VARCHAR(20) DEFAULT ""','variants/0/sku','Value1',false,'variants_attributes/0/sku'),
+		'variantId'=>array('VARCHAR(50) DEFAULT ""','variants/0/id','',false,'variants_attributes/0/id'),
+		'variantTitle'=>array('VARCHAR(50) DEFAULT ""','variants/0/title','Value11',false,'variants_attributes/0/title'),
+		'costPrice'=>array('DECIMAL(18,2)','variants/0/cost_price','Value15',false,'variants_attributes/0/cost_price'),
+		'quantity'=>array('INTEGER','variants/0/quantity','Value14',false,'variants_attributes/0/quantity'),
+		'oldPrice'=>array('DECIMAL(18,2)','variants/0/old_price','Value13',false,'variants_attributes/0/old_price'),
 		'price'=>array('DECIMAL(18,2)','variants/0/price','Value12',true,'variants_attributes/0/price'),
-		'description'=>array('TEXT','description','Value29',true,'description'),
-		'shortDescription'=>array('TEXT','short_description','Value30',true,'short_description'),
-		'metaKeywords'=>array('TEXT','meta_keywords','Value36',true,'meta_keywords'),
-		'metaDescription'=>array('TEXT','meta_description','Value37',true,'meta_description'),
+		'description'=>array('TEXT','description','Value29',false,'description'),
+		'shortDescription'=>array('TEXT','short_description','Value30',false,'short_description'),
+		'metaKeywords'=>array('TEXT','meta_keywords','Value36',false,'meta_keywords'),
+		'metaDescription'=>array('TEXT','meta_description','Value37',false,'meta_description'),
 		/*
 		iii.	На витрине магазина на Insales есть товары с флагом “Видимость на витриине” = “Выставлен”, но его нет в исходном excel - в этом случае выставляем флан товару “Скрыт”
 		iv.	В Insales есть товар, который с флагом “Скрыт”, но есть в исходном файле - выставить ему флаг “Выставлен”
@@ -424,6 +410,26 @@ class JConfig {
 		'image5'=>array('TEXT','images/4/src','Value20',true,'images/4/src'),
 		'image6'=>array('TEXT','images/5/src','Value21',true,'images/5/src'),
 	);
+	public $magento_product_fields = array( // Настройки парсинга полей
+		'productId'=>array('INTEGER','product_id','product_id',false,'product_id'),
+		'categoryId'=>array('INTEGER','category_ids/0','category_id',false,'category_ids/0'),
+		'name'=>array('VARCHAR(100) DEFAULT ""','name','Value11',false,'name'),
+		'sku'=>array('VARCHAR(20) DEFAULT ""','sku','Value1',false,'sku'),
+		'price'=>array('DECIMAL(18,2)','price','Value12',true,'price'),
+		'quantity'=>array('INTEGER','stock_data/0/qty','Value14',false,'stock_data/0/qty'),
+		'weight'=>array('DECIMAL(18,2)','weight','Value10',false,'weight'),
+		'urlKey'=>array('VARCHAR(100) DEFAULT ""','url_key','',false,'url_key'),
+		'urlPath'=>array('VARCHAR(100) DEFAULT ""','url_path','',false,'url_path'),
+		'description'=>array('TEXT','description','Value29',false,'description'),
+		'shortDescription'=>array('TEXT','short_description','Value30',false,'short_description'),
+		'metaKeywords'=>array('TEXT','meta_keywords','Value36',false,'meta_keywords'),
+		'metaDescription'=>array('TEXT','meta_description','Value37',false,'meta_description'),
+		/*
+		iii.	На витрине магазина на Magento есть товары с флагом “Видимость на витриине” = “Выставлен”, но его нет в исходном excel - в этом случае выставляем флан товару “Скрыт”
+		iv.	В Magento есть товар, который с флагом “Скрыт”, но есть в исходном файле - выставить ему флаг “Выставлен”
+		*/
+		'visibility'=>array('VARCHAR(50) DEFAULT ""','visibility','',true,'visibility'),
+	);
 	/*
 	Добавление товара со свойствами
 	Запрос: POST /admin/products.xml
@@ -432,7 +438,7 @@ class JConfig {
 	Важный момент: передавать надо все параметры, если ранее установленный параметр не будет передан в запросе, то он будет удален.
 	Запрос: PUT /admin/products/#{id}.xml
 	*/
-	public $producttemplate = array(
+	public $insales_product_template = array(
 		'insert'=>'return array(
 			variants_attributes => array(
 				0 => array(),
@@ -458,10 +464,40 @@ class JConfig {
 		);',
 	);
 
-	public $productkeys = array( // Перечень полей первичного ключа
+	public $magento_product_template = array(
+		'insert'=>'return array(
+			category_ids => array(),
+			stock_data => array(
+				0 => array(),
+			),
+		);',
+		'update'=>'return array(
+			category_ids => array(),
+			stock_data => array(
+				0 => array(),
+			),
+		);',
+	);
+
+	public $insales_product_keys = array( // Перечень полей первичного ключа
 		'variantId',
 		'sku',
 	);
 	
+	public $magento_product_keys = array( // Перечень полей первичного ключа
+		'product_id',
+	);
+	
 	public $watermark = 'logo_gif2.gif';// Файл с водяным знаком
+	
+	protected static $instance;
+	public static function getInstance()
+	{
+		// Only create the object if it doesn't exist.
+		if (empty(self::$instance))
+		{
+			self::$instance = new JConfig;
+		}
+		return self::$instance;
+	}
 }

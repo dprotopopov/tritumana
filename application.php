@@ -3,88 +3,134 @@
 // Разрабочик dmitry@protopopov.ru
 
 /** Include PHPExcel */
-require_once dirname(__FILE__) . '/PHPExcel_1.8.0_doc/Classes/PHPExcel.php';
+require_once dirname(__FILE__) . '/bower_components/PHPExcel/Classes/PHPExcel.php';
 
 require_once( dirname(__FILE__) . '/defines.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/database.php' );
+require_once( dirname(__FILE__) . '/factory.php' );
 
 
-class JApp {
+class JApplication {
 	private $config;
 	private $db;
 	
 	public function __construct() {
-		$this->config = new JConfig();
-		$this->db = new JDatabase();
+		$this->config = JFactory::getConfig();
+		$this->db = JFactory::getDbo();
 	}
 	
+	protected static $instance;
+	public static function getInstance()
+	{
+		// Only create the object if it doesn't exist.
+		if (empty(self::$instance))
+		{
+			self::$instance = new JApplication;
+		}
+		return self::$instance;
+	}
+
 	private function drop_table_if_exists(){
 		$queries = array();
-		foreach(array(TABLE_COLLECTION,TABLE_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL,TABLE_PAGE,TABLE_IMAGE,TABLE_INSALES_PRODUCT,TABLE_INSALES_IMAGE,TABLE_SETTINGS) as $table) $queries[] = 'DROP TABLE IF EXISTS ' . $this->config->dbprefix . $table;
+		foreach(array(
+			TABLE_MAGENTO_CATEGORY,
+			TABLE_MAGENTO_PRODUCT,
+			TABLE_INSALES_COLLECTION,
+			TABLE_INSALES_PRODUCT,
+			TABLE_CSV,
+			TABLE_XLS,
+			TABLE_URL,
+			TABLE_PAGE,
+			TABLE_IMAGE,
+			TABLE_INSALES_COLLECTION_QUEUE,
+			TABLE_INSALES_PRODUCT_QUEUE,
+			TABLE_INSALES_IMAGE_QUEUE,
+			TABLE_MAGENTO_CATEGORY_QUEUE,
+			TABLE_MAGENTO_PRODUCT_QUEUE,
+			TABLE_MAGENTO_IMAGE_QUEUE,
+			TABLE_SETTINGS
+			) as $table) $queries[] = 'DROP TABLE IF EXISTS ' . $this->config->dbprefix . $table;
 		return $queries;
 	}
 	private function create_table_if_not_exists(){
 		$queries = array();
 		$insaleskeys = array();
-		foreach($this->config->productjoins as $key=>$value) {
-			$insaleskeys[$key]=$this->config->productfields[$key];
-			$insaleskeys[$value]=$this->config->csvfields[$value];
+		$magentokeys = array();
+		foreach($this->config->insales_product_joins as $key=>$value) {
+			$insaleskeys[$key]=$this->config->insales_product_fields[$key];
+			$insaleskeys[$value]=$this->config->csv_fields[$value];
+		}
+		foreach($this->config->magento_product_joins as $key=>$value) {
+			$magentokeys[$key]=$this->config->magento_product_fields[$key];
+			$magentokeys[$value]=$this->config->csv_fields[$value];
 		}
 		$specifications = array(
-			TABLE_COLLECTION => array(
-				TABLE_COLLECTION . '_' . FIELD_ID . ' INTEGER',
-				TABLE_COLLECTION . '_' . FIELD_TITLE . ' VARCHAR(100)',
-				'PRIMARY KEY (' . TABLE_COLLECTION . '_' . FIELD_ID . ')'
+			TABLE_MAGENTO_CATEGORY => array(
+				implode('_',array(CATEGORY,ID)) . ' INTEGER',
+				implode('_',array(CATEGORY,NAME)) . ' VARCHAR(100)',
+				'PRIMARY KEY (' . implode('_',array(CATEGORY,ID)) . ')'
 			),
-			TABLE_PRODUCT => array(
-				FIELD_SOURCE . ' TEXT',
-				'PRIMARY KEY (' . implode(',', $this->config->productkeys) . ')',
-				'INDEX (' . implode(',', array_keys($this->config->productjoins)) . ')'
-			),
-			TABLE_CSV => array(
-				'PRIMARY KEY (' . implode(',', $this->config->csvkeys) . ')',
-				'INDEX (' . implode(',', array_values($this->config->productjoins)) . ')'
-			),
-			TABLE_XLS => array(
-				'PRIMARY KEY (' . implode(',', $this->config->xlskeys) . ')',
-				'INDEX (' . implode(',', array_keys($this->config->csvjoins)) . ')'
-			),
-			TABLE_URL => array(
-				'PRIMARY KEY (' . implode(',', $this->config->urlkeys) . ')',
-				'INDEX (' . implode(',', array_values($this->config->csvjoins)) . ')'
-			),
-			TABLE_PAGE => array(
-				FIELD_URL . ' VARCHAR(255)',
-				FIELD_LOADED . ' INTEGER',
-				'PRIMARY KEY (' . FIELD_URL . ')'			
-			),
-			TABLE_IMAGE => array(
-				FIELD_URL . ' VARCHAR(255)',
-				FIELD_FILE . ' VARCHAR(255)',
-				FIELD_LOADED . ' INTEGER',
-				'PRIMARY KEY (' . FIELD_FILE . ')'			
-			),
-			TABLE_SETTINGS => array(
-				FIELD_NAME . ' VARCHAR(100)',
-				FIELD_VALUE . ' VARCHAR(100)',
-				'PRIMARY KEY (' . FIELD_NAME . ')'
+			TABLE_MAGENTO_PRODUCT => array(
+				SOURCE . ' TEXT',
+				'PRIMARY KEY (' . implode(',', $this->config->magento_product_keys) . ')',
+				'INDEX (' . implode(',', array_keys($this->config->magento_product_joins)) . ')'
 			),
 			TABLE_INSALES_COLLECTION => array(
-				FIELD_METHOD . ' VARCHAR(50)',
-				FIELD_PATH . ' VARCHAR(100)',
-				FIELD_PARAMS . ' TEXT',
-				FIELD_STARTED . ' INTEGER',
-				TABLE_COLLECTION . '_' . FIELD_TITLE . ' VARCHAR(100)',
-				'PRIMARY KEY (' . TABLE_COLLECTION . '_' . FIELD_TITLE . ')'
+				implode('_',array(COLLECTION,ID)) . ' INTEGER',
+				implode('_',array(COLLECTION,TITLE)) . ' VARCHAR(100)',
+				'PRIMARY KEY (' . implode('_',array(COLLECTION,ID)) . ')'
 			),
 			TABLE_INSALES_PRODUCT => array(
-				FIELD_METHOD . ' VARCHAR(50)',
-				FIELD_PATH . ' VARCHAR(100)',
-				FIELD_PARAMS . ' TEXT',
-				FIELD_STARTED . ' INTEGER',
-				FIELD_ID . ' INTEGER',
+				SOURCE . ' TEXT',
+				'PRIMARY KEY (' . implode(',', $this->config->insales_product_keys) . ')',
+				'INDEX (' . implode(',', array_keys($this->config->insales_product_joins)) . ')'
+			),
+			TABLE_CSV => array(
+				'PRIMARY KEY (' . implode(',', $this->config->csv_keys) . ')',
+				'INDEX (' . implode(',', array_values($this->config->insales_product_joins)) . ')',
+				'INDEX (' . implode(',', array_values($this->config->magento_product_joins)) . ')'
+			),
+			TABLE_XLS => array(
+				'PRIMARY KEY (' . implode(',', $this->config->xls_keys) . ')',
+				'INDEX (' . implode(',', array_keys($this->config->csv_joins)) . ')'
+			),
+			TABLE_URL => array(
+				'PRIMARY KEY (' . implode(',', $this->config->url_keys) . ')',
+				'INDEX (' . implode(',', array_values($this->config->csv_joins)) . ')'
+			),
+			TABLE_PAGE => array(
+				URL . ' VARCHAR(255)',
+				LOADED . ' INTEGER',
+				'PRIMARY KEY (' . URL . ')'			
+			),
+			TABLE_IMAGE => array(
+				URL . ' VARCHAR(255)',
+				FILE . ' VARCHAR(255)',
+				LOADED . ' INTEGER',
+				'PRIMARY KEY (' . FILE . ')'			
+			),
+			TABLE_SETTINGS => array(
+				NAME . ' VARCHAR(100)',
+				VALUE . ' VARCHAR(100)',
+				'PRIMARY KEY (' . NAME . ')'
+			),
+			
+			TABLE_INSALES_COLLECTION_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				PATH . ' VARCHAR(100)',
+				PARAMS . ' TEXT',
+				STARTED . ' INTEGER',
+				implode('_',array(COLLECTION,TITLE)) . ' VARCHAR(100)',
+				'PRIMARY KEY (' . implode('_',array(COLLECTION,TITLE)) . ')'
+			),
+			TABLE_INSALES_PRODUCT_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				PATH . ' VARCHAR(100)',
+				PARAMS . ' TEXT',
+				STARTED . ' INTEGER',
+				ID . ' INTEGER',
 				'image1' . ' VARCHAR(255)',
 				'image2' . ' VARCHAR(255)',
 				'image3' . ' VARCHAR(255)',
@@ -93,20 +139,52 @@ class JApp {
 				'image6' . ' VARCHAR(255)',
 				'PRIMARY KEY (' . implode(',', array_keys($insaleskeys)) . ')'			
 			),
-			TABLE_INSALES_IMAGE => array(
-				FIELD_METHOD . ' VARCHAR(50)',
-				FIELD_PATH . ' VARCHAR(100)',
-				FIELD_PARAMS . ' TEXT',
-				FIELD_STARTED . ' INTEGER',
-				'image' . ' VARCHAR(255)',
+			TABLE_INSALES_IMAGE_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				PATH . ' VARCHAR(100)',
+				PARAMS . ' TEXT',
+				STARTED . ' INTEGER',
+				IMAGE . ' VARCHAR(255)',
+				'PRIMARY KEY (image)'			
+			),
+			
+			TABLE_MAGENTO_CATEGORY_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				implode('_',array(PARENT,ID)) . ' VARCHAR(100)',
+				PARAMS . ' TEXT',
+				STARTED . ' INTEGER',
+				implode('_',array(CATEGORY,NAME)) . ' VARCHAR(100)',
+				'PRIMARY KEY (' . implode('_',array(CATEGORY,NAME)) . ')'
+			),
+			TABLE_MAGENTO_PRODUCT_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				implode('_',array(PRODUCT,ID)) . ' VARCHAR(100)',
+				PARAMS . ' TEXT',
+				STARTED . ' INTEGER',
+				'image1' . ' VARCHAR(255)',
+				'image2' . ' VARCHAR(255)',
+				'image3' . ' VARCHAR(255)',
+				'image4' . ' VARCHAR(255)',
+				'image5' . ' VARCHAR(255)',
+				'image6' . ' VARCHAR(255)',
+				'PRIMARY KEY (' . implode(',', array_keys($magentokeys)) . ')'			
+			),
+			TABLE_MAGENTO_IMAGE_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				implode('_',array(PRODUCT,ID)) . ' VARCHAR(100)',
+				PARAMS . ' TEXT',
+				FILE . ' VARCHAR(255)',
+				STARTED . ' INTEGER',
+				IMAGE . ' VARCHAR(255)',
 				'PRIMARY KEY (image)'			
 			)
 		);
-		foreach(array(TABLE_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL) as $table) {
-			$fields = $table . 'fields';
+		foreach(array(TABLE_MAGENTO_PRODUCT,TABLE_INSALES_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL) as $table) {
+			$fields = $table . '_fields';
 			foreach($this->config->$fields as $field=>$values) $specifications[$table][] = $field . ' ' . $values[0];
 		}
-		foreach($insaleskeys as $field=>$values) $specifications[TABLE_INSALES_PRODUCT][] = $field . ' ' . $values[0];
+		foreach($insaleskeys as $field=>$values) $specifications[TABLE_INSALES_PRODUCT_QUEUE][] = $field . ' ' . $values[0];
+		foreach($magentokeys as $field=>$values) $specifications[TABLE_MAGENTO_PRODUCT_QUEUE][] = $field . ' ' . $values[0];
 		foreach($specifications as $table=>$values) $queries[] = 'CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . $table . '(' . implode(',', $values) . ') CHARACTER SET utf8 COLLATE utf8_general_ci';
 		return $queries;
 	}
@@ -125,17 +203,24 @@ class JApp {
 	public function info(){
 		set_time_limit(0);
 		$this->db->connect();
+		
 		$columns = array();
-		foreach(array(TABLE_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL) as $table) {
+		foreach(array(
+			TABLE_MAGENTO_PRODUCT,
+			TABLE_INSALES_PRODUCT,
+			TABLE_CSV,
+			TABLE_XLS,
+			TABLE_URL
+			) as $table) {
 			$columns[$table] = array();
-			$fields = $table . 'fields';
+			$fields = $table . '_fields';
 			foreach($this->config->$fields as $field=>$values) $columns[$table][] = $field . ' ' . $values[0];
 		}
 		// Создаём таблицы в случае их отсутствия в базе данных
 		$result = $this->db->multi_query(implode(';',$this->create_table_if_not_exists()));
 		$this->db->free_multi_result($result);
 
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_LOADED . '="0"');
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . LOADED . '="0"');
 		$queue = $this->db->fetch_single($result);
 		$this->db->free_result($result);
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE);
@@ -143,7 +228,7 @@ class JApp {
 		$this->db->free_result($result);
 		echo "<pre>Image queue: <b>$queue/$queue_total</b> - $queue картинок в очереди ожидает загрузки , $queue_total - всего известных ссылок на картинки с сайта</pre>";
 		
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime));
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime));
 		$queue = $this->db->fetch_single($result);
 		$this->db->free_result($result);
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE);
@@ -151,15 +236,25 @@ class JApp {
 		$this->db->free_result($result);
 		echo "<pre>Page queue: <b>$queue/$queue_total</b> - $queue страниц в очереди ожидает загрузки, $queue_total – всего известных ссылок на страницы сайта</pre>";
 		
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT);
-		$queue = $this->db->fetch_single($result);
-		$this->db->free_result($result);
-		echo "<pre>InSales queue: <b>$queue</b> - $queue карточек товаров в очереди ожидает загрузки на InSales</pre>";
+		foreach(array(
+			INSALES=>TABLE_INSALES_PRODUCT_QUEUE,
+			MAGENTO=>TABLE_MAGENTO_PRODUCT_QUEUE
+			) as $shop=>$table) {
+			$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . $table);
+			$queue = $this->db->fetch_single($result);
+			$this->db->free_result($result);
+			echo "<pre>InSales queue: <b>$queue</b> - $queue карточек товаров в очереди ожидает загрузки на $shop</pre>";
+		}
 		
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_INSALES_IMAGE);
-		$queue = $this->db->fetch_single($result);
-		$this->db->free_result($result);
-		echo "<pre>InSales image queue: <b>$queue</b> - $queue изображений товаров в очереди ожидает загрузки на InSales</pre>";
+		foreach(array(
+			INSALES=>TABLE_INSALES_IMAGE_QUEUE,
+			MAGENTO=>TABLE_MAGENTO_IMAGE_QUEUE
+			) as $shop=>$table) {
+			$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . $table);
+			$queue = $this->db->fetch_single($result);
+			$this->db->free_result($result);
+			echo "<pre>InSales image queue: <b>$queue</b> - $queue изображений товаров в очереди ожидает загрузки на $shop</pre>";
+		}
 		
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_URL );
 		$count = $this->db->fetch_single($result);
@@ -176,10 +271,16 @@ class JApp {
 		$this->db->free_result($result);
 		echo "<pre>Csv records created: <b>$count</b> - количество созданых строк в csv файле</pre>";
 		
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PRODUCT );
-		$count = $this->db->fetch_single($result);
-		$this->db->free_result($result);
-		echo "<pre>InSales records downloaded: <b>$count</b> - количество загруженных карточек товара из InSales</pre>";
+		foreach(array(
+			INSALES=>TABLE_INSALES_PRODUCT,
+			MAGENTO=>TABLE_MAGENTO_PRODUCT
+			) as $shop=>$table) {
+			$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . $table );
+			$count = $this->db->fetch_single($result);
+			$this->db->free_result($result);
+			echo "<pre>InSales records downloaded: <b>$count</b> - количество загруженных карточек товара из $shop</pre>";
+		}
+		
 		$this->db->disconnect();
 	}
 	public function page_curl_cron(){
@@ -189,21 +290,21 @@ class JApp {
 		$this->db->connect();
 		// Очищаем таблицу от ненужных ссылок
 		$queries = array();
-		$queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE NOT ' . FIELD_URL . ' LIKE "%' . $default['host'] . '%"';
+		$queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE NOT ' . URL . ' LIKE "%' . $default['host'] . '%"';
 		// Удаляем неправильные ссылки
-		foreach(array("jpg","jpeg","gif","png","tiff","pdf","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.' . $ext .'%"';
+		foreach(array("jpg","jpeg","gif","png","tiff","pdf","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . URL . ' LIKE "%.' . $ext .'%"';
 		// Добавляем ссылку на сайт
-		$queries[] = 'INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($this->config->url) . '",0)';
+		$queries[] = 'INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . URL . ',' . LOADED . ') VALUES ("' . safe($this->config->url) . '",0)';
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
 		// Получаем список ссылок для задания
 		// В первую очередь обрабатываются ссылки, содержащие в себе слово product
 		$records = array(); 
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
-		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . URL . ' LIKE "%product%" ORDER BY ' . LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
+		while($row=$this->db->fetch_row($result)) $records[]=$row[URL];
 		$this->db->free_result($result);
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . FIELD_URL . ' LIKE "%product%" ORDER BY ' . FIELD_LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
-		while($row=$this->db->fetch_row($result)) $records[]=$row[FIELD_URL];
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . URL . ' LIKE "%product%" ORDER BY ' . LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
+		while($row=$this->db->fetch_row($result)) $records[]=$row[URL];
 		$this->db->free_result($result);
 		foreach($records as $url){
 			$queries = array();
@@ -219,7 +320,7 @@ class JApp {
 			$html = file_get_contents($url);			
 			if(!$html) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
-				$queries[]='DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . FIELD_URL . '="' . safe($url) . '"';
+				$queries[]='DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . URL . '="' . safe($url) . '"';
 				// $pid === -1 failed to fork
 				// $pid == 0, this is the child thread
 				// $pid != 0, this is the parent thread
@@ -249,11 +350,11 @@ class JApp {
 					$links[implode('/',$addr)] = 0;
 				}
 			}
-			foreach($links as $link=>$time) $queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . $link . '",' . $time . ')';
+			foreach($links as $link=>$time) $queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . URL . ',' . LOADED . ') VALUES ("' . $link . '",' . $time . ')';
 			
 			// Обрабатываем поля на странице
 			$fields = array();
-			foreach($this->config->urlfields as $urlfield=>$values){
+			foreach($this->config->url_fields as $urlfield=>$values){
 				$elements = $xpath->query($values[1]);
 				$tokens = array();
 				if (!is_null($elements)) {
@@ -264,19 +365,19 @@ class JApp {
 
 			// Обрабатываем транслит изображений
 			for($i = 1; $i <= 6; $i++){
-				$src = $fields["image" . $i];
+				$src = $fields[IMAGE . $i];
 				if($src){
 					$imageUrl = unparse_url(parse_url($src),$default);
 					$type = explode(".", $imageUrl);
 					$ext = strtolower($type[count($type)-1]);
 					$file = $this->config->imagedir . $fields["translit"] . '_' . $i . '.' . $ext;
-					$fields["image" . $i] = $file;
-					$queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)';
+					$fields[IMAGE . $i] = $file;
+					$queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . URL . ',' . FILE . ',' . LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)';
 				}
 			}
 			
 			$queries[]='REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")';
-			$queries[]='REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . FIELD_URL . ',' . FIELD_LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')';
+			$queries[]='REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . URL . ',' . LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')';
 
 			$result = $this->db->multi_query(implode(';',$queries));
 			$this->db->free_multi_result($result);
@@ -315,14 +416,14 @@ class JApp {
 		$queries = array();
 		// Очищаем таблицу от ненужных ссылок
 		// Удаляем неправильные ссылки
-		foreach(array("html","htm","php","asp","pdf","doc","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . ' LIKE "%.' . $ext .'%"';
+		foreach(array("html","htm","php","asp","pdf","doc","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . URL . ' LIKE "%.' . $ext .'%"';
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
 		// Получаем список ссылок для задания
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_LOADED . '="0" LIMIT ' . $this->config->imagecronlimit);
-		$records = array(); while($row=$this->db->fetch_row($result)) $records[$row[FIELD_FILE]]=$row[FIELD_URL];
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . LOADED . '="0" LIMIT ' . $this->config->imagecronlimit);
+		$records = array(); while($row=$this->db->fetch_row($result)) $records[$row[FILE]]=$row[URL];
 		$this->db->free_result($result);
-		$query='REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . FIELD_URL . ',' . FIELD_FILE . ',' . FIELD_LOADED . ') VALUES (?,?,?)';
+		$query='REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . URL . ',' . FILE . ',' . LOADED . ') VALUES (?,?,?)';
 		foreach($records as $file=>$url){
 			$pid = -1;
 			// The pcntl_fork() function creates a child process that differs from the parent process only in its PID and PPID.
@@ -336,7 +437,7 @@ class JApp {
 			$type = explode(".", $url);
 			$ext = strtolower($type[count($type)-1]);
 			$ext = (!in_array($ext, array("jpeg","png","gif"))) ? "jpeg" : $ext;
-			$tempFile = $this->config->imagetempfilename . getmypid() . '.' . $ext;
+			$tempFile = $this->config->tempimagefilename . getmypid() . '.' . $ext;
 			// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 			error_reporting(E_ERROR | E_PARSE);
 			unlink($tempFile);	
@@ -344,7 +445,7 @@ class JApp {
 			$image = file_get_contents($url);
 			if(!$image) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
-				$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . FIELD_URL . '= ? AND ' . FIELD_FILE . '= ?',array($url,$file));
+				$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . URL . '= ? AND ' . FILE . '= ?',array($url,$file));
 				// $pid === -1 failed to fork
 				// $pid == 0, this is the child thread
 				// $pid != 0, this is the parent thread
@@ -388,7 +489,7 @@ class JApp {
 			//copy watermark
 			imagecopyresampled( $output, $watermarkSource,  $dst_x, $dst_y, 0, 0, 
 								$wanted_width, $wanted_height, $watermarkWidth, $watermarkHeight);
-			$func = "image".$ext;
+			$func = IMAGE.$ext;
 			$func($output, $file); 
 
 			$this->db->execute($query, array($url,$file,time()));
@@ -425,15 +526,37 @@ class JApp {
 	public function clear_url(){ $this->clear_table(TABLE_URL); }
 	public function clear_page(){ $this->clear_table(TABLE_PAGE); }
 	public function clear_image(){ $this->clear_table(TABLE_IMAGE); }
-	public function clear_product(){ $this->clear_table(TABLE_PRODUCT); }
-	public function clear_collection(){ $this->clear_table(TABLE_COLLECTION); }
+	public function clear_magento_product(){ $this->clear_table(TABLE_MAGENTO_PRODUCT); }
+	public function clear_magento_category(){ $this->clear_table(TABLE_MAGENTO_CATEGORY); }
+	public function clear_insales_product(){ $this->clear_table(TABLE_INSALES_PRODUCT); }
+	public function clear_insales_collection(){ $this->clear_table(TABLE_INSALES_COLLECTION); }
 	public function clear_settings(){ $this->clear_table(TABLE_SETTINGS); }
 	public function clear_insales(){ 
 		$start = microtime(true);
 		set_time_limit(0);
 		$this->db->connect();
 		$queries = array();
-		foreach(array(TABLE_INSALES_COLLECTION,TABLE_INSALES_PRODUCT,TABLE_INSALES_IMAGE) as $table) $queries[]='TRUNCATE ' . $this->config->dbprefix . $table;
+		foreach(array(
+			TABLE_INSALES_COLLECTION_QUEUE,
+			TABLE_INSALES_PRODUCT_QUEUE,
+			TABLE_INSALES_IMAGE_QUEUE
+			) as $table) $queries[]='TRUNCATE ' . $this->config->dbprefix . $table;
+		$result = $this->db->multi_query(implode(';',$queries));
+		$this->db->free_multi_result($result);
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
+	}
+	public function clear_magento(){ 
+		$start = microtime(true);
+		set_time_limit(0);
+		$this->db->connect();
+		$queries = array();
+		foreach(array(
+			TABLE_MAGENTO_COLLECTION_QUEUE,
+			TABLE_MAGENTO_PRODUCT_QUEUE,
+			TABLE_MAGENTO_IMAGE_QUEUE
+			) as $table) $queries[]='TRUNCATE ' . $this->config->dbprefix . $table;
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
 		$this->db->disconnect();
@@ -455,7 +578,7 @@ class JApp {
 		set_time_limit(0);
 		$type = explode(".", $this->config->xls);
 		$ext = strtolower($type[count($type)-1]);
-		$tempFile = $this->config->xlstempfilename . getmypid() . '.' . $ext;
+		$tempFile = $this->config->tempxlsfilename . getmypid() . '.' . $ext;
 		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
@@ -469,11 +592,11 @@ class JApp {
 		$sheet = $excel->getActiveSheet();
 		$outline = array_fill(0,10,0);
 		$this->db->connect();
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xlsfields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xlsfields),'?')) . ')';
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xls_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xls_fields),'?')) . ')';
 		foreach($sheet->getRowIterator() as $rowIterator){
 			$row = $rowIterator->getRowIndex();
 			$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
-			$values = array(); foreach($this->config->xlsfields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
+			$values = array(); foreach($this->config->xls_fields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
 			$this->db->execute($query,$values);
 		}
 		// Удаление строк с пустой ценой
@@ -496,12 +619,12 @@ class JApp {
 		$csv = $reader->load($this->config->csv);
 		$sheet = $csv->getActiveSheet();
 		$this->db->connect();
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_CSV . '(' . implode(',',array_keys($this->config->csvfields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->csvfields),'?')) . ')';
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_CSV . '(' . implode(',',array_keys($this->config->csv_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->csv_fields),'?')) . ')';
 		foreach($sheet->getRowIterator() as $rowIterator){
 			$row = $rowIterator->getRowIndex();
 			if(!$row) continue; // Пропускаем строку заголовков колонок
 			$values = array(); $col = 0; 
-			foreach($this->config->csvfields as $csvfield) $values[] = $sheet->getCellByColumnAndRow($col++,$row)->getValue();
+			foreach($this->config->csv_fields as $csvfield) $values[] = $sheet->getCellByColumnAndRow($col++,$row)->getValue();
 			$this->db->execute($query,$values);
 		}
 		$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_CSV . ' WHERE Value12="0"');
@@ -516,9 +639,9 @@ class JApp {
 		set_time_limit(0);
 		$this->db->connect();
 		$queries = array();
-		$csvfields = array(); foreach($this->config->csvfields as $csvfield=>$values) if($values[2]) $csvfields[$csvfield]=$values[2];
-		$where = array(); foreach($this->config->csvjoins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
-		$queries[] = 'REPLACE ' . $this->config->dbprefix . TABLE_CSV . '(' . implode(',', array_keys($csvfields)) . ') SELECT ' . implode(',', array_values($csvfields)) . ' FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csvjointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where);
+		$csv_fields = array(); foreach($this->config->csv_fields as $csvfield=>$values) if($values[2]) $csv_fields[$csvfield]=$values[2];
+		$where = array(); foreach($this->config->csv_joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
+		$queries[] = 'REPLACE ' . $this->config->dbprefix . TABLE_CSV . '(' . implode(',', array_keys($csv_fields)) . ') SELECT ' . implode(',', array_values($csv_fields)) . ' FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csv_join_type . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where);
 		$queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_CSV . ' WHERE Value12="0"';
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
@@ -542,17 +665,17 @@ class JApp {
 		//add BOM to fix UTF-8 in Excel
 		fputs($file, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 		// The fputcsv() function formats a line as CSV and writes it to an open file.
-		$headers = array(); foreach($this->config->csvfields as $field) $headers[] = $field[1];
+		$headers = array(); foreach($this->config->csv_fields as $field) $headers[] = $field[1];
 		fputcsv($file,$headers,';'); // Добавляем строку с заголовками колонок
-		$where = array(); foreach($this->config->csvjoins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
+		$where = array(); foreach($this->config->csv_joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
 		$this->db->connect();
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csvjointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csv_join_type . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
 		while($row=$this->db->fetch_row($result)){
-			for($i = 1; $i <= 6; $i++) if($row["image" . $i]) {
-				$addr[count($addr) - 1] =  $row["image" . $i];
-				$row["image" . $i] = implode('/', $addr);
+			for($i = 1; $i <= 6; $i++) if($row[IMAGE . $i]) {
+				$addr[count($addr) - 1] =  $row[IMAGE . $i];
+				$row[IMAGE . $i] = implode('/', $addr);
 			}
-			$values = array(); foreach($this->config->csvfields as $field) $values[] = $field[2]?$row[$field[2]]:'';
+			$values = array(); foreach($this->config->csv_fields as $field) $values[] = $field[2]?$row[$field[2]]:'';
 			// The fputcsv() function formats a line as CSV and writes it to an open file.
 		  	fputcsv($file,$values,';');
 		}
@@ -589,7 +712,7 @@ class JApp {
 		// Загрузка xls файла
 		$type = explode(".", $this->config->xls);
 		$ext = strtolower($type[count($type)-1]);
-		$tempFile = $this->config->xlstempfilename . getmypid() . '.' . $ext;
+		$tempFile = $this->config->tempxlsfilename . getmypid() . '.' . $ext;
 		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
@@ -602,11 +725,11 @@ class JApp {
 		$excel = $reader->load($tempFile);
 		$sheet = $excel->getActiveSheet();
 		$outline = array_fill(0,10,0);
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xlsfields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xlsfields),'?')) . ')';
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xls_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xls_fields),'?')) . ')';
 		foreach($sheet->getRowIterator() as $rowIterator){
 			$row = $rowIterator->getRowIndex();
 			$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
-			$values = array(); foreach($this->config->xlsfields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
+			$values = array(); foreach($this->config->xls_fields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
 			$this->db->execute($query,$values);
 		}
 		// Удаление строк с пустой ценой
@@ -621,16 +744,16 @@ class JApp {
 		//add BOM to fix UTF-8 in Excel
 		fputs($file, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 		// The fputcsv() function formats a line as CSV and writes it to an open file.
-		$headers = array(); foreach($this->config->csvfields as $field) $headers[] = $field[1];
+		$headers = array(); foreach($this->config->csv_fields as $field) $headers[] = $field[1];
 		fputcsv($file,$headers,';'); // Добавляем строку с заголовками колонок
-		$where = array(); foreach($this->config->csvjoins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csvjointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
+		$where = array(); foreach($this->config->csv_joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csv_join_type . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
 		while($row=$this->db->fetch_row($result)){
-			for($i = 1; $i <= 6; $i++) if($row["image" . $i]) {
-				$addr[count($addr) - 1] =  $row["image" . $i];
-				$row["image" . $i] = implode('/', $addr);
+			for($i = 1; $i <= 6; $i++) if($row[IMAGE . $i]) {
+				$addr[count($addr) - 1] =  $row[IMAGE . $i];
+				$row[IMAGE . $i] = implode('/', $addr);
 			}
-			$values = array(); foreach($this->config->csvfields as $field) $values[] = $field[2]?$row[$field[2]]:'';
+			$values = array(); foreach($this->config->csv_fields as $field) $values[] = $field[2]?$row[$field[2]]:'';
 			// The fputcsv() function formats a line as CSV and writes it to an open file.
 		  	fputcsv($file,$values,';');
 
@@ -663,7 +786,7 @@ class JApp {
 		// Загрузка xls файла
 		$type = explode(".", $this->config->xls);
 		$ext = strtolower($type[count($type)-1]);
-		$tempFile = $this->config->xlstempfilename . getmypid() . '.' . $ext;
+		$tempFile = $this->config->tempxlsfilename . getmypid() . '.' . $ext;
 		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
@@ -676,11 +799,11 @@ class JApp {
 		$excel = $reader->load($tempFile);
 		$sheet = $excel->getActiveSheet();
 		$outline = array_fill(0,10,0);
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xlsfields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xlsfields),'?')) . ')';
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xls_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xls_fields),'?')) . ')';
 		foreach($sheet->getRowIterator() as $rowIterator){
 			$row = $rowIterator->getRowIndex();
 			$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
-			$values = array(); foreach($this->config->xlsfields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
+			$values = array(); foreach($this->config->xls_fields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
 			$this->db->execute($query,$values);
 		}
 		// Удаление строк с пустой ценой
@@ -689,7 +812,7 @@ class JApp {
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
 
-		$tempFile = $this->config->csvtempfilename . getmypid() . '.' . 'csv';
+		$tempFile = $this->config->tempcsvfilename . getmypid() . '.' . 'csv';
 		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 		error_reporting(E_ERROR | E_PARSE);
 		unlink($tempFile);	
@@ -700,16 +823,16 @@ class JApp {
 		//add BOM to fix UTF-8 in Excel
 		fputs($file, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 		// The fputcsv() function formats a line as CSV and writes it to an open file.
-		$headers = array(); foreach($this->config->csvfields as $field) $headers[] = $field[1];
+		$headers = array(); foreach($this->config->csv_fields as $field) $headers[] = $field[1];
 		fputcsv($file,$headers,';'); // Добавляем строку с заголовками колонок
-		$where = array(); foreach($this->config->csvjoins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csvjointype . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
+		$where = array(); foreach($this->config->csv_joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csv_join_type . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
 		while($row=$this->db->fetch_row($result)){
-			for($i = 1; $i <= 6; $i++) if($row["image" . $i]) {
-				$addr[count($addr) - 1] =  $row["image" . $i];
-				$row["image" . $i] = implode('/', $addr);
+			for($i = 1; $i <= 6; $i++) if($row[IMAGE . $i]) {
+				$addr[count($addr) - 1] =  $row[IMAGE . $i];
+				$row[IMAGE . $i] = implode('/', $addr);
 			}
-			$values = array(); foreach($this->config->csvfields as $field) $values[] = $field[2]?$row[$field[2]]:'';
+			$values = array(); foreach($this->config->csv_fields as $field) $values[] = $field[2]?$row[$field[2]]:'';
 			// The fputcsv() function formats a line as CSV and writes it to an open file.
 		  	fputcsv($file,$values,';');
 		}

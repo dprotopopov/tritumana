@@ -7,26 +7,23 @@
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
 require_once( dirname(__FILE__) . '/insales.php' );
+require_once( dirname(__FILE__) . '/magento.php' );
+require_once( dirname(__FILE__) . '/factory.php' );
 
-	$config = new JConfig();
-	$app = new JApp();
-	$insales = new InSales();
+	$config = JFactory::getConfig();
+	$app = JFactory::getApplication();
+	$insales = JFactory::getInSales();
+	$magento = JFactory::getMagento();
 	
 ?>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
 <title><?php echo $config->sitename; ?></title>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -38,23 +35,6 @@ require_once( dirname(__FILE__) . '/insales.php' );
 	echo "<h1>" . $config->sitename . "</h1>";
 	
 	switch ($action){
-		case 'rebuild_database':
-		case 'page_curl_cron':
-		case 'image_curl_cron':
-		case 'clear_xls':
-		case 'clear_url':
-		case 'clear_page':
-		case 'clear_image':
-		case 'clear_insales':
-		case 'clear_product':
-		case 'clear_collection':
-		case 'clear_settings':
-		case 'import_xls':
-		case 'import_url':
-		case 'export_csv':
-		case 'update_csv':
-			$app->$action();		
-			break;
 		case 'insales_cron':
 		case 'insales_install':
 		case 'insales_login':
@@ -66,11 +46,23 @@ require_once( dirname(__FILE__) . '/insales.php' );
 			$insalesAction = $split[1];
 			$insales->$insalesAction();		
 			break;
+		case 'magento_cron':
+		case 'magento_category':
+		case 'magento_product':
+		case 'magento_export':
+			$split=explode('_',$action);
+			$magentoAction = $split[1];
+			$magento->$magentoAction();		
+			break;
 		case 'task1':
 			$app->task1();		
 			break;
 		case 'task2':
 			$insales->task2();		
+			$magento->task2();		
+			break;
+		default:
+			$app->$action();		
 			break;
 	}
 
@@ -89,8 +81,11 @@ require_once( dirname(__FILE__) . '/insales.php' );
           <a href="index.php?action=clear_page"><?php echo implode('/',$addr); ?>?action=clear_page</a> <br />
           <a href="index.php?action=clear_image"><?php echo implode('/',$addr); ?>?action=clear_image</a> <br />
           <a href="index.php?action=clear_insales"><?php echo implode('/',$addr); ?>?action=clear_insales</a> <br />
-          <a href="index.php?action=clear_product"><?php echo implode('/',$addr); ?>?action=clear_product</a> <br />
-          <a href="index.php?action=clear_collection"><?php echo implode('/',$addr); ?>?action=clear_collection</a> <br />
+          <a href="index.php?action=clear_insales_product"><?php echo implode('/',$addr); ?>?action=clear_insales_product</a> <br />
+          <a href="index.php?action=clear_insales_collection"><?php echo implode('/',$addr); ?>?action=clear_insales_collection</a> <br />
+          <a href="index.php?action=clear_magento"><?php echo implode('/',$addr); ?>?action=clear_magento</a> <br />
+          <a href="index.php?action=clear_magento_product"><?php echo implode('/',$addr); ?>?action=clear_magento_product</a> <br />
+          <a href="index.php?action=clear_magento_category"><?php echo implode('/',$addr); ?>?action=clear_magento_category</a> <br />
           <a href="index.php?action=clear_settings"><?php echo implode('/',$addr); ?>?action=clear_settings</a> <br />
           <a href="index.php?action=import_xls"><?php echo implode('/',$addr); ?>?action=import_xls</a> <br />
           <a href="index.php?action=import_url"><?php echo implode('/',$addr); ?>?action=import_url</a> <br />
@@ -103,6 +98,10 @@ require_once( dirname(__FILE__) . '/insales.php' );
           <a href="index.php?action=insales_collection"><?php echo implode('/',$addr); ?>?action=insales_collection</a><br />
           <a href="index.php?action=insales_product"><?php echo implode('/',$addr); ?>?action=insales_product</a><br />
           <a href="index.php?action=insales_export"><?php echo implode('/',$addr); ?>?action=insales_export</a><br />
+          <a href="index.php?action=magento_cron"><?php echo implode('/',$addr); ?>?action=magento_cron</a><br />
+          <a href="index.php?action=magento_category"><?php echo implode('/',$addr); ?>?action=magento_category</a><br />
+          <a href="index.php?action=magento_product"><?php echo implode('/',$addr); ?>?action=magento_product</a><br />
+          <a href="index.php?action=magento_export"><?php echo implode('/',$addr); ?>?action=magento_export</a><br />
           </p>
         <p>Если изменяете состав полей или  настройки базы данных – после этого выполните rebuild_database через  index.php – таблицы в базе будут удалены и созданы снова.<br />
           А дальше cron.php опять заполнит таблицы данными</p>
@@ -141,8 +140,11 @@ require_once( dirname(__FILE__) . '/insales.php' );
         	<option value="clear_page">clear_page</option>
         	<option value="clear_image">clear_image</option>
         	<option value="clear_insales">clear_insales</option>
-        	<option value="clear_product">clear_product</option>
-        	<option value="clear_collection">clear_collection</option>
+        	<option value="clear_insales_product">clear_insales_product</option>
+        	<option value="clear_insales_collection">clear_insales_collection</option>
+        	<option value="clear_magento">clear_magento</option>
+        	<option value="clear_magento_product">clear_magento_product</option>
+        	<option value="clear_magento_category">clear_magento_category</option>
         	<option value="clear_settings">clear_settings</option>
         	<option value="import_xls">import_xls</option>
         	<option value="import_url">import_url</option>
@@ -155,6 +157,10 @@ require_once( dirname(__FILE__) . '/insales.php' );
         	<option value="insales_collection">insales_collection</option>
         	<option value="insales_product">insales_product</option>
         	<option value="insales_export">insales_export</option>
+        	<option value="magento_cron">magento_cron</option>
+        	<option value="magento_category">magento_category</option>
+        	<option value="magento_product">magento_product</option>
+        	<option value="magento_export">magento_export</option>
         	<option value="task1">task1</option>
         	<option value="task2">task2</option>
         </select>

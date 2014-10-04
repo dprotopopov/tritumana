@@ -18,12 +18,21 @@
 <file name="index.php" server="ftp.aaabbbccc.esy.es" local="130499889652341634" remote="130499781600000000" Dst="0" />
 <file name="info.php" server="ftp.aaabbbccc.esy.es" local="130497754957574657" remote="130498322400000000" Dst="0" />
 <file name="insales.php" server="ftp.aaabbbccc.esy.es" local="130500727716663845" remote="130500619800000000" Dst="0" />
-<file name="install.php" server="ftp.aaabbbccc.esy.es" local="130497841926911720" remote="130498322400000000" Dst="0" />
-<file name="login.php" server="ftp.aaabbbccc.esy.es" local="130498489505735560" remote="130498381200000000" Dst="0" />
 <file name="task.php" server="ftp.aaabbbccc.esy.es" local="130497843951880333" remote="130498322400000000" Dst="0" />
 <file name="task1.php" server="ftp.aaabbbccc.esy.es" local="130497845628854500" remote="130498322400000000" Dst="0" />
 <file name="task2.php" server="ftp.aaabbbccc.esy.es" local="130497843870549940" remote="130498322400000000" Dst="0" />
-<file name="uninstall.php" server="ftp.aaabbbccc.esy.es" local="130498362278247034" remote="130498322400000000" Dst="0" />
 <file name="logo_gif2.gif" server="ftp.aaabbbccc.esy.es" local="130486297481003206" remote="130498504800000000" Dst="0" />
-<file name="application.php" server="ftp.tritumana.meximas.com" local="130500580963341627" remote="130500436800000000" Dst="0" />
+<file name="application.php" server="ftp.tritumana.meximas.com" local="130500587378980984" remote="130501258800000000" Dst="0" />
+<file name="database.php" server="ftp.tritumana.meximas.com" local="130501986036389542" remote="130501842000000000" Dst="0" />
+<file name="configuration.php" server="ftp.tritumana.meximas.com" local="130506870449285083" remote="130506726600000000" Dst="0" />
+<file name="defines.php" server="ftp.tritumana.meximas.com" local="130500587473413050" remote="130501258800000000" Dst="0" />
+<file name="functions.php" server="ftp.tritumana.meximas.com" local="130498729985617815" remote="130501258800000000" Dst="0" />
+<file name="index.php" server="ftp.tritumana.meximas.com" local="130499889652341634" remote="130501258800000000" Dst="0" />
+<file name="cron.php" server="ftp.tritumana.meximas.com" local="130498007659747854" remote="130501258800000000" Dst="0" />
+<file name="insales.php" server="ftp.tritumana.meximas.com" local="130506865967852753" remote="130506721800000000" Dst="0" />
+<file name="info.php" server="ftp.tritumana.meximas.com" local="130497754957574657" remote="130501258800000000" Dst="0" />
+<file name="task1.php" server="ftp.tritumana.meximas.com" local="130497845628854500" remote="130501258800000000" Dst="0" />
+<file name="task2.php" server="ftp.tritumana.meximas.com" local="130497843870549940" remote="130501258800000000" Dst="0" />
+<file name="task.php" server="ftp.tritumana.meximas.com" local="130497843951880333" remote="130501258800000000" Dst="0" />
+<file name="logo_gif2.gif" server="ftp.tritumana.meximas.com" local="130486297481003206" remote="130501258800000000" Dst="0" />
 </dwsync>

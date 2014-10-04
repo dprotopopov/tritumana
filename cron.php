@@ -7,10 +7,13 @@
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
 require_once( dirname(__FILE__) . '/insales.php' );
+require_once( dirname(__FILE__) . '/magento.php' );
+require_once( dirname(__FILE__) . '/factory.php' );
 
-	$config = new JConfig();
-	$app = new JApp();
-	$insales = new InSales();
+	$config = JFactory::getConfig();
+	$app = JFactory::getApplication();
+	$insales = JFactory::getInSales();
+	$magento = JFactory::getMagento();
 	
 ?>
 <head>
@@ -18,16 +21,10 @@ require_once( dirname(__FILE__) . '/insales.php' );
 <meta name="Description" content="" />
 <meta http-equiv="Refresh" content="60;" />
 <title><?php echo $config->sitename; ?></title>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -54,7 +51,7 @@ Page queue: <strong>0/….</strong><br />
         <p>Не гарантирую правильность страниц и результатов при работе через прокси - правильность зависит от типа прокси (использование кеширования пересылаемых данных и т.д.)  - для домашних сетей это наверняка &quot;правильные&quot; прокси, мобильные сети - наверняка &quot;неправильные&quot; прокси.</p>
       </div>
     </div>
-	<iframe src="FlipClock-master/examples/localization.html" width="100%" align="middle" scrolling="no"></iframe>
+	<iframe src="bower_components/flipclock/examples/localization.html" width="100%" align="middle" scrolling="no"></iframe>
 	<iframe src="info.php" width="100%" height="240" align="middle" scrolling="auto"></iframe>
 <p><a href="index.php" target="_blank" class="btn btn-primary btn-lg" role="button">Learn more</a></p>
 </div>
@@ -62,7 +59,8 @@ Page queue: <strong>0/….</strong><br />
 <?php
 	$app->page_curl_cron();		
 	$app->image_curl_cron();		
-	$insales->cron();		
+	if($config->insales_enabled) $insales->cron();		
+	if($config->magento_enabled) $magento->cron();		
 ?>
 </body>
 </html>

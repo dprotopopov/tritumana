@@ -1,0 +1,14 @@
+{
+  "name": "cssParentSelector",
+  "homepage": "https://github.com/Idered/cssParentSelector",
+  "_release": "bf806b8f70",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "bf806b8f70e204fc05c52c55fd00f724c7fe97ba"
+  },
+  "_source": "https://github.com/Idered/cssParentSelector.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/Idered/cssParentSelector.git",
+  "_direct": true
+}

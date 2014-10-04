@@ -3,6 +3,7 @@
 // Разрабочик dmitry@protopopov.ru
 
 require_once( dirname(__FILE__) . '/configuration.php' );
+require_once( dirname(__FILE__) . '/factory.php' );
 
 class JDatabase {
 	private $config;
@@ -10,9 +11,22 @@ class JDatabase {
 	var $result;
 	var $mysqli;
 	var $num_queries=0;
+	
 	public function __construct() {
-		$this->config = new JConfig();
+		$this->config = JFactory::getConfig();
 	}
+
+	protected static $instance;
+	public static function getInstance()
+	{
+		// Only create the object if it doesn't exist.
+		if (empty(self::$instance))
+		{
+			self::$instance = new JDatabase;
+		}
+		return self::$instance;
+	}
+
 	function connect()
 	{
 		if($this->config->persistent)
@@ -38,6 +52,7 @@ class JDatabase {
    function execute($query,$params=array()){
 	 	if($this->config->debug) echo "<pre>$query</pre>";
 		$res    = $this->mysqli->prepare($query); 
+		if(!$res) $this->query_error();
 		$code = array();
 		$index=0; foreach($params as $param) { 
 			$code[] = '$var'. $index .'=$params[' . $index . ']?$params[' . $index . ']:"";';
@@ -73,11 +88,17 @@ class JDatabase {
      if(!$result) { $result=$this->result; }
      return $result->fetch_assoc();
    }
+   function fetch_all_rows($result=0)
+   {
+     if(!$result) { $result=$this->result; }
+	 $rows = array(); while($row=$result->fetch_assoc()) $rows[] = $row;
+     return $rows;
+   }
    // Returns the number of rows in the result set.
    function num_rows($result=0)
    {
      if(!$result) { $result=$this->result; }
-     return $result->num_rows();
+     return $result->num_rows;
    }
    // Frees the memory associated with the result.
    //Note

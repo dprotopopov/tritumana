@@ -1,0 +1,38 @@
+////////////////////////////////////////////
+//
+// Назначение изображения в качестве бэкграундного изображения
+//
+// Разработчик Дмитрий Протопопов http://protopopov.ru
+// RBA DESIGN INTERNATIONAL LLC http://rbadesign.us
+//
+// Используются нижеследующие компоненты:
+// jQuery http://jquery.com
+// cssParentSelector https://github.com/Idered/cssParentSelector
+/*
+Порядок использования:
+1. Установить у нужного элемента класс "background-image-element"
+
+Пример:
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="jQuery.cssParentSelector.js"></script>
+	<script src="jquery.backgroundImageElement.js"></script>
+	<link href="jquery.backgroundImageElement.css" rel="stylesheet" type="text/css" />
+	
+<div>
+<img src="1.jpg" class="background-image-element" role="fixed"/>
+<img src="2.jpg" class="background-image-element" role="scroll"/>
+</div>
+*/
+////////////////////////////////////////////
+
+*!>.background-image-element {
+background-position:center center;
+background-repeat:no-repeat;
+background-size:cover;
+-webkit-background-size:cover;
+-o-background-size:cover;
+-moz-background-size:cover;
+}
+img.background-image-element {
+display:none;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "jquery.Element",
+  "homepage": "https://github.com/dprotopopov/jquery.Element",
+  "_release": "4ccd11dff0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "4ccd11dff0c872a6a802c443e07661c6221df6ae"
+  },
+  "_source": "https://github.com/dprotopopov/jquery.Element.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/dprotopopov/jquery.Element.git",
+  "_direct": true
+}

@@ -1,0 +1,24 @@
+{
+  "name": "tritumana",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dprotopopov/tritumana",
+  "authors": [
+    "dprotopopov <protopopov@narod.ru>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "PHPExcel": "https://github.com/PHPOffice/PHPExcel.git#~1.8.0",
+    "bootstrap": "https://github.com/twbs/bootstrap.git#~3.2.0",
+    "cssParentSelector": "https://github.com/Idered/cssParentSelector.git",
+    "flipclock": "https://github.com/objectivehtml/FlipClock.git#~0.6.3",
+    "jquery.Element": "https://github.com/dprotopopov/jquery.Element.git",
+    "slabText": "https://github.com/freqdec/slabText.git#~2.2.0"
+  }
+}

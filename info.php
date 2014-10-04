@@ -6,9 +6,10 @@
 // Использование: cd <рабочий каталог> & php -f cron.php
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
+require_once( dirname(__FILE__) . '/factory.php' );
 
-	$config = new JConfig();
-	$app = new JApp();
+	$config = JFactory::getConfig();
+	$app = JFactory::getApplication();
 	
 ?>
 <head>
@@ -16,16 +17,10 @@ require_once( dirname(__FILE__) . '/application.php' );
 <meta name="Description" content="" />
 <meta http-equiv="Refresh" content="15;" />
 <title><?php echo $config->sitename; ?></title>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
 <?php

@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-/W3C/DTD XHTML 1.0 Transitional/EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/cssParentSelector/jQuery.cssParentSelector.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+<!-- Optional theme -->
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+<!-- Latest compiled and minified JavaScript -->
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<link href="bower_components/slabText/css/slabtext.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="bower_components/slabText/js/jquery.slabtext.js"></script>
+
+	<script src="jquery.backgroundImageElement.js"></script>
+	<script src="jquery.centerElementContent.js"></script>
+	<script src="jquery.fullScreenElement.js"></script>
+	<script src="jquery.topMenuElement.js"></script>
+	<script src="jquery.rowElementChildren.js"></script>
+	<script src="jquery.windowBorderElement.js"></script>
+	<script src="jquery.browserDetect.js"></script>
+	<script src="slabtexted.js"></script>
+    
+<link href="jquery.centerElementContent.css" rel="stylesheet" type="text/css" />
+<link href="jquery.windowBorderElement.css" rel="stylesheet" type="text/css" />
+<link href="jquery.rowElementChildren.css" rel="stylesheet" type="text/css" />
+<link href="jquery.backgroundImageElement.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body style="margin:0;">
+<ul class="top-menu-element row-element-children">
+<li>Item1</li>
+<li>Item2</li>
+<li>Item3</li>
+</ul>
+<div class="full-screen-element">
+Page1
+<div class="left-border-element">
+Hello world
+</div>
+<img src="images/2.jpg" class="background-image-element" role="fixed"/>
+</div>
+<div class="full-screen-element">Page2</div>
+<div class="center-element-content">
+<p>Row1</p>
+<p>Row2</p>
+</div>
+<style>#aaa>div{width:70%;height:70%;}</style>
+<div id="aaa" class="full-screen-element center-element-content">
+<div class="slabtext" style="height:50%;display:block;">Разработчик Дмитрий Протопопов http://protopopov.ru</div>
+<div class="slabtext" style="height:50%;display:block;">RBA DESIGN INTERNATIONAL LLC http://rbadesign.us</div>
+<img src="images/3.jpg" class="background-image-element" role="scroll"/>
+</div>
+<script>
+(function($) {
+if($.IsChrome) alert("Welcome Chrome");
+})(jQuery);
+</script>
+<img src="images/1.jpg" class="background-image-element" />
+<div class="bottom-border-element">
+Hello world
+</div>
+</body>
+</html>

@@ -19,6 +19,7 @@
     "cssParentSelector": "https://github.com/Idered/cssParentSelector.git",
     "flipclock": "https://github.com/objectivehtml/FlipClock.git#~0.6.3",
     "jquery.Element": "https://github.com/dprotopopov/jquery.Element.git",
-    "slabText": "https://github.com/freqdec/slabText.git#~2.2.0"
+    "slabText": "https://github.com/freqdec/slabText.git#~2.2.0",
+    "jquery": "~2.1.1"
   }
 }

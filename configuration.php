@@ -22,13 +22,12 @@ class JConfig {
 	public $pagecronlimit = 20; // Количество загружаемых страниц с сайта-донора при одном вызове cron
 	public $pageupdatetime = 360000; // Периодичность обновления информации в базе данных
 
-	public $insalescronlimit = 20; // Количество выгружаемых карточек товара на InSales при одном вызове cron
+	public $insalescronlimit = 100; // Количество выгружаемых карточек товара на InSales при одном вызове cron
 	public $insalesperpage = 20; // Количество загружаемых карточек товаров из InSales на одной странице при одном вызове cron
 	public $insalespagecount = 10; // Количество загружаемых страниц карточек товаров из InSales при одном вызове cron
 	public $insalesexpiretime = 360000; 
 	
-	public $magentocronlimit = 20; // Количество выгружаемых карточек товара на InSales при одном вызове cron
-	public $magentocronperiod = 100; 
+	public $magentocronlimit = 100; // Количество выгружаемых карточек товара на Magento при одном вызове cron
 	public $magentoexpiretime = 360000; 
 	
 	// Настройки коннекта к базе данных
@@ -60,10 +59,10 @@ class JConfig {
 	// Настройки Magento
 	public $magento_enabled = '1'; 
 	public $my_magento_domain = 'tritumana.ru';  // Домен в Magento
-	public $magento_api_url = 'http://tritumana.ru/api/v2_soap/?wsdl';  // Host в Magento
+	public $magento_api_url = 'http://tritumana.ru/api/soap/?wsdl';  // Host в Magento
 	public $magento_api_user = 'user';  // User в Magento
 	public $magento_api_key = '0dd445ca899ed0c1b37cc2a918a6c225';  // Access Key в Magento
-	public $magento_root_category_id = 2;  // ID of the parent category в Magento
+	public $magento_root_category_id = '2';  // ID of the parent category в Magento
 
 	// Информация о сайте-доноре
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта (сайт-донор)
@@ -363,7 +362,7 @@ class JConfig {
 	);
 	public $magento_product_joins = array( // Перечень полей для сопоставления записей
 		'name'=>'Value11',
-		'sku'=>'Value1',
+		'productSku'=>'Value1',
 	);
 	/*
 		b.	В конфиге должна быть возможность указать, какие поля обновлять для карточки товара (по-умолчанию все отключены, 
@@ -411,15 +410,16 @@ class JConfig {
 		'image6'=>array('TEXT','images/5/src','Value21',true,'images/5/src'),
 	);
 	public $magento_product_fields = array( // Настройки парсинга полей
-		'productId'=>array('INTEGER','product_id','product_id',false,'product_id'),
-		'categoryId'=>array('INTEGER','category_ids/0','category_id',false,'category_ids/0'),
+		'productId'=>array('VARCHAR(50) DEFAULT ""','product_id','product_id',false,'product_id'),
+		'productSku'=>array('VARCHAR(50) DEFAULT ""','sku','Value1',false,'sku'),
+		'categoryId'=>array('VARCHAR(50) DEFAULT "2"','category_ids/0','category_id',false,'category_ids/0'),
 		'name'=>array('VARCHAR(100) DEFAULT ""','name','Value11',false,'name'),
-		'sku'=>array('VARCHAR(20) DEFAULT ""','sku','Value1',false,'sku'),
-		'price'=>array('DECIMAL(18,2)','price','Value12',true,'price'),
-		'quantity'=>array('INTEGER','stock_data/0/qty','Value14',false,'stock_data/0/qty'),
-		'weight'=>array('DECIMAL(18,2)','weight','Value10',false,'weight'),
-		'urlKey'=>array('VARCHAR(100) DEFAULT ""','url_key','',false,'url_key'),
-		'urlPath'=>array('VARCHAR(100) DEFAULT ""','url_path','',false,'url_path'),
+		'price'=>array('VARCHAR(50) DEFAULT ""','price','Value12',true,'price'),
+		'quantity'=>array('VARCHAR(50) DEFAULT "0"','stock_data/0/qty','Value14',false,'stock_data/0/qty'),
+		'weight'=>array('VARCHAR(50) DEFAULT "0"','weight','Value10',false,'weight'),
+		'tax_class_id'=>array('VARCHAR(50) DEFAULT "0"','tax_class_id','tax_class_id',false,'tax_class_id'),
+		'urlKey'=>array('TEXT','url_key','',false,'url_key'),
+		'urlPath'=>array('TEXT','url_path','',false,'url_path'),
 		'description'=>array('TEXT','description','Value29',false,'description'),
 		'shortDescription'=>array('TEXT','short_description','Value30',false,'short_description'),
 		'metaKeywords'=>array('TEXT','meta_keywords','Value36',false,'meta_keywords'),
@@ -428,7 +428,8 @@ class JConfig {
 		iii.	На витрине магазина на Magento есть товары с флагом “Видимость на витриине” = “Выставлен”, но его нет в исходном excel - в этом случае выставляем флан товару “Скрыт”
 		iv.	В Magento есть товар, который с флагом “Скрыт”, но есть в исходном файле - выставить ему флаг “Выставлен”
 		*/
-		'visibility'=>array('VARCHAR(50) DEFAULT ""','visibility','',true,'visibility'),
+		'visibility'=>array('VARCHAR(50) DEFAULT "0"','visibility','',true,'visibility'),
+		'status'=>array('VARCHAR(50) DEFAULT "2"','status','status',false,'status'),
 	);
 	/*
 	Добавление товара со свойствами
@@ -440,44 +441,42 @@ class JConfig {
 	*/
 	public $insales_product_template = array(
 		'insert'=>'return array(
-			variants_attributes => array(
-				0 => array(),
-			),
-			images => array(
-				0 => array(),
-				1 => array(),
-				2 => array(),
-				3 => array(),
-				4 => array(),
-				5 => array(),
-			),
-		);',
+				variants_attributes => array(
+					0 => array(),
+				),
+				images => array(
+					0 => array(),
+					1 => array(),
+					2 => array(),
+					3 => array(),
+					4 => array(),
+					5 => array(),
+				),
+			);',
 		'update'=>'return array(
-			images => array(
-				0 => array(),
-				1 => array(),
-				2 => array(),
-				3 => array(),
-				4 => array(),
-				5 => array(),
-			),
-		);',
+				images => array(
+					0 => array(),
+					1 => array(),
+					2 => array(),
+					3 => array(),
+					4 => array(),
+					5 => array(),
+				),
+			);',
 	);
 
-	public $magento_product_template = array(
-		'insert'=>'return array(
-			category_ids => array(),
-			stock_data => array(
-				0 => array(),
-			),
-		);',
-		'update'=>'return array(
-			category_ids => array(),
-			stock_data => array(
-				0 => array(),
-			),
-		);',
-	);
+	public $magento_product_template = 'return array(
+				category_ids => array(
+					0 => "2"
+				),
+				weight => "0",
+				status => "2",
+				tax_class_id => "0",
+				visibility => "0",
+				stock_data => array(
+					0 => array(),
+				),
+			);';
 
 	public $insales_product_keys = array( // Перечень полей первичного ключа
 		'variantId',
@@ -485,7 +484,7 @@ class JConfig {
 	);
 	
 	public $magento_product_keys = array( // Перечень полей первичного ключа
-		'product_id',
+		'productId',
 	);
 	
 	public $watermark = 'logo_gif2.gif';// Файл с водяным знаком

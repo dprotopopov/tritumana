@@ -57,6 +57,7 @@ Page queue: <strong>0/….</strong><br />
 </div>
 </div>
 <?php
+	$app->cron();		
 	$app->page_curl_cron();		
 	$app->image_curl_cron();		
 	if($config->insales_enabled) $insales->cron();		

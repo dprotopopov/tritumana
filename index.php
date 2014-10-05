@@ -54,14 +54,30 @@ require_once( dirname(__FILE__) . '/factory.php' );
 			$magentoAction = $split[1];
 			$magento->$magentoAction();		
 			break;
-		case 'task1':
-			$app->task1();		
-			break;
 		case 'task2':
-			$insales->task2();		
-			$magento->task2();		
+			if($config->insales_enabled) $insales->task2();		
+			if($config->magento_enabled) $magento->task2();		
 			break;
-		default:
+		case 'task':
+		case 'task1':
+		case 'rebuild_database':
+		case 'page_curl_cron':
+		case 'image_curl_cron':
+		case 'clear_xls':
+		case 'clear_url':
+		case 'clear_page':
+		case 'clear_image':
+		case 'clear_insales':
+		case 'clear_insales_product':
+		case 'clear_insales_collection':
+		case 'clear_magento':
+		case 'clear_magento_product':
+		case 'clear_magento_category':
+		case 'clear_settings':
+		case 'import_xls':
+		case 'import_url':
+		case 'export_csv':
+		case 'update_csv':
 			$app->$action();		
 			break;
 	}
@@ -215,7 +231,7 @@ require_once( dirname(__FILE__) . '/factory.php' );
 </div>
 <p><a href="cron.php" target="_blank" class="btn btn-default btn-block">cron.php (запуск задачи парсинга страниц и загрузки картинок в соответствии с очередью ссылок)</a></p>
 <p><a href="index.php" target="_self" class="btn btn-default btn-block">index.php</a></p>
-<p><a href="<?php echo $config->csv; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->csv; ?> (сперва выполните  clear_xls+import_xls+export_csv)</a></p>
+<p><a href="<?php echo $config->csv; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->csv; ?></a></p>
 <p><a href="<?php echo $config->xls; ?>" target="_blank" class="btn btn-default btn-block"><?php echo $config->xls; ?></a></p>
 
 </body>

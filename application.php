@@ -9,6 +9,8 @@ require_once( dirname(__FILE__) . '/defines.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/database.php' );
+require_once( dirname(__FILE__) . '/insales.php' );
+require_once( dirname(__FILE__) . '/magento.php' );
 require_once( dirname(__FILE__) . '/factory.php' );
 
 
@@ -42,14 +44,15 @@ class JApplication {
 			TABLE_CSV,
 			TABLE_XLS,
 			TABLE_URL,
-			TABLE_PAGE,
-			TABLE_IMAGE,
-			TABLE_INSALES_COLLECTION_QUEUE,
-			TABLE_INSALES_PRODUCT_QUEUE,
-			TABLE_INSALES_IMAGE_QUEUE,
-			TABLE_MAGENTO_CATEGORY_QUEUE,
-			TABLE_MAGENTO_PRODUCT_QUEUE,
-			TABLE_MAGENTO_IMAGE_QUEUE,
+			TABLE_PAGE_DOWNLOAD_QUEUE,
+			TABLE_IMAGE_DOWNLOAD_QUEUE,
+			TABLE_INSALES_COLLECTION_UPLOAD_QUEUE,
+			TABLE_INSALES_PRODUCT_UPLOAD_QUEUE,
+			TABLE_INSALES_IMAGE_UPLOAD_QUEUE,
+			TABLE_MAGENTO_CATEGORY_UPLOAD_QUEUE,
+			TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE,
+			TABLE_MAGENTO_PRODUCT_DOWNLOAD_QUEUE,
+			TABLE_MAGENTO_IMAGE_UPLOAD_QUEUE,
 			TABLE_SETTINGS
 			) as $table) $queries[] = 'DROP TABLE IF EXISTS ' . $this->config->dbprefix . $table;
 		return $queries;
@@ -67,12 +70,20 @@ class JApplication {
 			$magentokeys[$value]=$this->config->csv_fields[$value];
 		}
 		$specifications = array(
+			TABLE_TASK_QUEUE => array(
+				ID . ' INTEGER',
+				CLAZZ . ' VARCHAR(100)',
+				METHOD . ' VARCHAR(100)',
+				'PRIMARY KEY (' . ID . ')'
+			),
 			TABLE_MAGENTO_CATEGORY => array(
 				implode('_',array(CATEGORY,ID)) . ' INTEGER',
 				implode('_',array(CATEGORY,NAME)) . ' VARCHAR(100)',
 				'PRIMARY KEY (' . implode('_',array(CATEGORY,ID)) . ')'
 			),
 			TABLE_MAGENTO_PRODUCT => array(
+				implode('_',array(PRODUCT,ID)) . ' VARCHAR(100)',
+				implode('_',array(PRODUCT,SKU)) . ' VARCHAR(100)',
 				SOURCE . ' TEXT',
 				'PRIMARY KEY (' . implode(',', $this->config->magento_product_keys) . ')',
 				'INDEX (' . implode(',', array_keys($this->config->magento_product_joins)) . ')'
@@ -100,12 +111,12 @@ class JApplication {
 				'PRIMARY KEY (' . implode(',', $this->config->url_keys) . ')',
 				'INDEX (' . implode(',', array_values($this->config->csv_joins)) . ')'
 			),
-			TABLE_PAGE => array(
+			TABLE_PAGE_DOWNLOAD_QUEUE => array(
 				URL . ' VARCHAR(255)',
 				LOADED . ' INTEGER',
 				'PRIMARY KEY (' . URL . ')'			
 			),
-			TABLE_IMAGE => array(
+			TABLE_IMAGE_DOWNLOAD_QUEUE => array(
 				URL . ' VARCHAR(255)',
 				FILE . ' VARCHAR(255)',
 				LOADED . ' INTEGER',
@@ -117,7 +128,7 @@ class JApplication {
 				'PRIMARY KEY (' . NAME . ')'
 			),
 			
-			TABLE_INSALES_COLLECTION_QUEUE => array(
+			TABLE_INSALES_COLLECTION_UPLOAD_QUEUE => array(
 				METHOD . ' VARCHAR(50)',
 				PATH . ' VARCHAR(100)',
 				PARAMS . ' TEXT',
@@ -125,21 +136,21 @@ class JApplication {
 				implode('_',array(COLLECTION,TITLE)) . ' VARCHAR(100)',
 				'PRIMARY KEY (' . implode('_',array(COLLECTION,TITLE)) . ')'
 			),
-			TABLE_INSALES_PRODUCT_QUEUE => array(
+			TABLE_INSALES_PRODUCT_UPLOAD_QUEUE => array(
 				METHOD . ' VARCHAR(50)',
 				PATH . ' VARCHAR(100)',
 				PARAMS . ' TEXT',
 				STARTED . ' INTEGER',
 				ID . ' INTEGER',
-				'image1' . ' VARCHAR(255)',
-				'image2' . ' VARCHAR(255)',
-				'image3' . ' VARCHAR(255)',
-				'image4' . ' VARCHAR(255)',
-				'image5' . ' VARCHAR(255)',
-				'image6' . ' VARCHAR(255)',
+				implode('',array(IMAGE,1)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,2)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,3)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,4)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,5)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,6)) . ' VARCHAR(255)',
 				'PRIMARY KEY (' . implode(',', array_keys($insaleskeys)) . ')'			
 			),
-			TABLE_INSALES_IMAGE_QUEUE => array(
+			TABLE_INSALES_IMAGE_UPLOAD_QUEUE => array(
 				METHOD . ' VARCHAR(50)',
 				PATH . ' VARCHAR(100)',
 				PARAMS . ' TEXT',
@@ -148,43 +159,52 @@ class JApplication {
 				'PRIMARY KEY (image)'			
 			),
 			
-			TABLE_MAGENTO_CATEGORY_QUEUE => array(
+			TABLE_MAGENTO_CATEGORY_UPLOAD_QUEUE => array(
 				METHOD . ' VARCHAR(50)',
-				implode('_',array(PARENT,ID)) . ' VARCHAR(100)',
+				implode('_',array(PARENT,ID)) . ' VARCHAR(50)',
+				implode('_',array(CHILD,ID)) . ' VARCHAR(50)',
 				PARAMS . ' TEXT',
 				STARTED . ' INTEGER',
 				implode('_',array(CATEGORY,NAME)) . ' VARCHAR(100)',
 				'PRIMARY KEY (' . implode('_',array(CATEGORY,NAME)) . ')'
 			),
-			TABLE_MAGENTO_PRODUCT_QUEUE => array(
+			TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE => array(
 				METHOD . ' VARCHAR(50)',
-				implode('_',array(PRODUCT,ID)) . ' VARCHAR(100)',
+				implode('_',array(PRODUCT,ID)) . ' VARCHAR(50)',
+				implode('_',array(PRODUCT,SKU)) . ' VARCHAR(50)',
 				PARAMS . ' TEXT',
 				STARTED . ' INTEGER',
-				'image1' . ' VARCHAR(255)',
-				'image2' . ' VARCHAR(255)',
-				'image3' . ' VARCHAR(255)',
-				'image4' . ' VARCHAR(255)',
-				'image5' . ' VARCHAR(255)',
-				'image6' . ' VARCHAR(255)',
+				implode('',array(IMAGE,1)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,2)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,3)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,4)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,5)) . ' VARCHAR(255)',
+				implode('',array(IMAGE,6)) . ' VARCHAR(255)',
 				'PRIMARY KEY (' . implode(',', array_keys($magentokeys)) . ')'			
 			),
-			TABLE_MAGENTO_IMAGE_QUEUE => array(
+			TABLE_MAGENTO_PRODUCT_DOWNLOAD_QUEUE => array(
 				METHOD . ' VARCHAR(50)',
-				implode('_',array(PRODUCT,ID)) . ' VARCHAR(100)',
+				implode('_',array(PRODUCT,ID)) . ' VARCHAR(50)',
+				implode('_',array(PRODUCT,SKU)) . ' VARCHAR(50)',
+				STARTED . ' INTEGER',
+				'PRIMARY KEY (' . implode(',', array(implode('_',array(PRODUCT,ID)),implode('_',array(PRODUCT,SKU)))) . ')'			
+			),
+			TABLE_MAGENTO_IMAGE_UPLOAD_QUEUE => array(
+				METHOD . ' VARCHAR(50)',
+				implode('_',array(PRODUCT,ID)) . ' VARCHAR(50)',
+				implode('_',array(PRODUCT,SKU)) . ' VARCHAR(50)',
+				implode('_',array(IMAGE,FILE)) . ' VARCHAR(255)',
 				PARAMS . ' TEXT',
-				FILE . ' VARCHAR(255)',
 				STARTED . ' INTEGER',
 				IMAGE . ' VARCHAR(255)',
-				'PRIMARY KEY (image)'			
+				'PRIMARY KEY (' . IMAGE . ')'			
 			)
 		);
+		$list = array(TABLE_INSALES_PRODUCT_UPLOAD_QUEUE=>$insaleskeys,TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE=>$magentokeys);
 		foreach(array(TABLE_MAGENTO_PRODUCT,TABLE_INSALES_PRODUCT,TABLE_CSV,TABLE_XLS,TABLE_URL) as $table) {
-			$fields = $table . '_fields';
-			foreach($this->config->$fields as $field=>$values) $specifications[$table][] = $field . ' ' . $values[0];
+			$fields = implode('_',array($table,'fields')); $list[$table] = $this->config->$fields;
 		}
-		foreach($insaleskeys as $field=>$values) $specifications[TABLE_INSALES_PRODUCT_QUEUE][] = $field . ' ' . $values[0];
-		foreach($magentokeys as $field=>$values) $specifications[TABLE_MAGENTO_PRODUCT_QUEUE][] = $field . ' ' . $values[0];
+		foreach($list as $table=>$keys)	foreach($keys as $field=>$values) $specifications[$table][] = $field . ' ' . $values[0];
 		foreach($specifications as $table=>$values) $queries[] = 'CREATE TABLE IF NOT EXISTS ' . $this->config->dbprefix . $table . '(' . implode(',', $values) . ') CHARACTER SET utf8 COLLATE utf8_general_ci';
 		return $queries;
 	}
@@ -220,40 +240,40 @@ class JApplication {
 		$result = $this->db->multi_query(implode(';',$this->create_table_if_not_exists()));
 		$this->db->free_multi_result($result);
 
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . LOADED . '="0"');
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE . ' WHERE ' . LOADED . '="0"');
 		$queue = $this->db->fetch_single($result);
 		$this->db->free_result($result);
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE);
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE);
 		$queue_total = $this->db->fetch_single($result);
 		$this->db->free_result($result);
 		echo "<pre>Image queue: <b>$queue/$queue_total</b> - $queue картинок в очереди ожидает загрузки , $queue_total - всего известных ссылок на картинки с сайта</pre>";
 		
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime));
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime));
 		$queue = $this->db->fetch_single($result);
 		$this->db->free_result($result);
-		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE);
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE);
 		$queue_total = $this->db->fetch_single($result);
 		$this->db->free_result($result);
 		echo "<pre>Page queue: <b>$queue/$queue_total</b> - $queue страниц в очереди ожидает загрузки, $queue_total – всего известных ссылок на страницы сайта</pre>";
 		
 		foreach(array(
-			INSALES=>TABLE_INSALES_PRODUCT_QUEUE,
-			MAGENTO=>TABLE_MAGENTO_PRODUCT_QUEUE
+			INSALES=>TABLE_INSALES_PRODUCT_UPLOAD_QUEUE,
+			MAGENTO=>TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE
 			) as $shop=>$table) {
 			$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . $table);
 			$queue = $this->db->fetch_single($result);
 			$this->db->free_result($result);
-			echo "<pre>InSales queue: <b>$queue</b> - $queue карточек товаров в очереди ожидает загрузки на $shop</pre>";
+			echo "<pre>$shop queue: <b>$queue</b> - $queue карточек товаров в очереди ожидает загрузки на $shop</pre>";
 		}
 		
 		foreach(array(
-			INSALES=>TABLE_INSALES_IMAGE_QUEUE,
-			MAGENTO=>TABLE_MAGENTO_IMAGE_QUEUE
+			INSALES=>TABLE_INSALES_IMAGE_UPLOAD_QUEUE,
+			MAGENTO=>TABLE_MAGENTO_IMAGE_UPLOAD_QUEUE
 			) as $shop=>$table) {
 			$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . $table);
 			$queue = $this->db->fetch_single($result);
 			$this->db->free_result($result);
-			echo "<pre>InSales image queue: <b>$queue</b> - $queue изображений товаров в очереди ожидает загрузки на $shop</pre>";
+			echo "<pre>$shop image queue: <b>$queue</b> - $queue изображений товаров в очереди ожидает загрузки на $shop</pre>";
 		}
 		
 		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_URL );
@@ -278,7 +298,7 @@ class JApplication {
 			$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . $table );
 			$count = $this->db->fetch_single($result);
 			$this->db->free_result($result);
-			echo "<pre>InSales records downloaded: <b>$count</b> - количество загруженных карточек товара из $shop</pre>";
+			echo "<pre>$shop records downloaded: <b>$count</b> - количество загруженных карточек товара из $shop</pre>";
 		}
 		
 		$this->db->disconnect();
@@ -290,20 +310,20 @@ class JApplication {
 		$this->db->connect();
 		// Очищаем таблицу от ненужных ссылок
 		$queries = array();
-		$queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE NOT ' . URL . ' LIKE "%' . $default['host'] . '%"';
+		$queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . ' WHERE NOT ' . URL . ' LIKE "%' . $default['host'] . '%"';
 		// Удаляем неправильные ссылки
-		foreach(array("jpg","jpeg","gif","png","tiff","pdf","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . URL . ' LIKE "%.' . $ext .'%"';
+		foreach(array("jpg","jpeg","gif","png","tiff","pdf","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . ' WHERE ' . URL . ' LIKE "%.' . $ext .'%"';
 		// Добавляем ссылку на сайт
-		$queries[] = 'INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . URL . ',' . LOADED . ') VALUES ("' . safe($this->config->url) . '",0)';
+		$queries[] = 'INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . '(' . URL . ',' . LOADED . ') VALUES ("' . safe($this->config->url) . '",0)';
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
 		// Получаем список ссылок для задания
 		// В первую очередь обрабатываются ссылки, содержащие в себе слово product
 		$records = array(); 
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . URL . ' LIKE "%product%" ORDER BY ' . LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND ' . URL . ' LIKE "%product%" ORDER BY ' . LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
 		while($row=$this->db->fetch_row($result)) $records[]=$row[URL];
 		$this->db->free_result($result);
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . URL . ' LIKE "%product%" ORDER BY ' . LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . ' WHERE ' . LOADED . '<' . (time()-$this->config->pageupdatetime) .' AND NOT ' . URL . ' LIKE "%product%" ORDER BY ' . LOADED . ' LIMIT ' . ($this->config->pagecronlimit - count($records)));
 		while($row=$this->db->fetch_row($result)) $records[]=$row[URL];
 		$this->db->free_result($result);
 		foreach($records as $url){
@@ -320,7 +340,7 @@ class JApplication {
 			$html = file_get_contents($url);			
 			if(!$html) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
-				$queries[]='DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE . ' WHERE ' . URL . '="' . safe($url) . '"';
+				$queries[]='DELETE FROM ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . ' WHERE ' . URL . '="' . safe($url) . '"';
 				// $pid === -1 failed to fork
 				// $pid == 0, this is the child thread
 				// $pid != 0, this is the parent thread
@@ -350,7 +370,7 @@ class JApplication {
 					$links[implode('/',$addr)] = 0;
 				}
 			}
-			foreach($links as $link=>$time) $queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE . '(' . URL . ',' . LOADED . ') VALUES ("' . $link . '",' . $time . ')';
+			foreach($links as $link=>$time) $queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . '(' . URL . ',' . LOADED . ') VALUES ("' . $link . '",' . $time . ')';
 			
 			// Обрабатываем поля на странице
 			$fields = array();
@@ -372,12 +392,12 @@ class JApplication {
 					$ext = strtolower($type[count($type)-1]);
 					$file = $this->config->imagedir . $fields["translit"] . '_' . $i . '.' . $ext;
 					$fields[IMAGE . $i] = $file;
-					$queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . URL . ',' . FILE . ',' . LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)';
+					$queries[]='INSERT IGNORE ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE . '(' . URL . ',' . FILE . ',' . LOADED . ') VALUES ("' . safe($imageUrl) . '","' . safe($file) . '",0)';
 				}
 			}
 			
 			$queries[]='REPLACE ' . $this->config->dbprefix . TABLE_URL . '(' . implode(',', array_keys($fields)) . ') VALUES ("' . implode('","', array_values($fields)) . '")';
-			$queries[]='REPLACE ' . $this->config->dbprefix . TABLE_PAGE . '(' . URL . ',' . LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')';
+			$queries[]='REPLACE ' . $this->config->dbprefix . TABLE_PAGE_DOWNLOAD_QUEUE . '(' . URL . ',' . LOADED . ') VALUES ("' . safe($url) . '",' . time() . ')';
 
 			$result = $this->db->multi_query(implode(';',$queries));
 			$this->db->free_multi_result($result);
@@ -416,15 +436,19 @@ class JApplication {
 		$queries = array();
 		// Очищаем таблицу от ненужных ссылок
 		// Удаляем неправильные ссылки
-		foreach(array("html","htm","php","asp","pdf","doc","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . URL . ' LIKE "%.' . $ext .'%"';
+		foreach(array("html","htm","php","asp","pdf","doc","doc","xls","ppt","docx","xlsx","pptx","avi","mov","mpg","mpeg","swf","exe","msi","zip","swf") as $ext) $queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE . ' WHERE ' . URL . ' LIKE "%.' . $ext .'%"';
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
 		// Получаем список ссылок для задания
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . LOADED . '="0" LIMIT ' . $this->config->imagecronlimit);
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE . ' WHERE ' . LOADED . '="0" LIMIT ' . $this->config->imagecronlimit);
 		$records = array(); while($row=$this->db->fetch_row($result)) $records[$row[FILE]]=$row[URL];
 		$this->db->free_result($result);
-		$query='REPLACE ' . $this->config->dbprefix . TABLE_IMAGE . '(' . URL . ',' . FILE . ',' . LOADED . ') VALUES (?,?,?)';
+		$query='REPLACE ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE . '(' . URL . ',' . FILE . ',' . LOADED . ') VALUES (?,?,?)';
 		foreach($records as $file=>$url){
+
+			// помечаем файл сразу как обработанный, чтобы не зависать на одной ошибке
+			$this->db->execute($query, array($url,$file,time()));
+			
 			$pid = -1;
 			// The pcntl_fork() function creates a child process that differs from the parent process only in its PID and PPID.
 			// Please see your system's fork(2) man page for specific details as to how fork works on your system.
@@ -445,7 +469,7 @@ class JApplication {
 			$image = file_get_contents($url);
 			if(!$image) {
 				// Исклучаем из дальнейшей загрузки отсутствующие страницы
-				$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE . ' WHERE ' . URL . '= ? AND ' . FILE . '= ?',array($url,$file));
+				$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_IMAGE_DOWNLOAD_QUEUE . ' WHERE ' . URL . '= ? AND ' . FILE . '= ?',array($url,$file));
 				// $pid === -1 failed to fork
 				// $pid == 0, this is the child thread
 				// $pid != 0, this is the parent thread
@@ -456,44 +480,48 @@ class JApplication {
 			$size = getimagesize($tempFile);
 			$width = $size[0];
 			$height = $size[1];
-			$func = "imagecreatefrom".$ext;
-			$source = $func($tempFile);
-			//create output resource
-			$output = imagecreatetruecolor($width, $height);
-			//to preserve PNG transparency
-			//saving all full alpha channel information
-			imagesavealpha($output, true);
-			//setting completely transparent color
-			$transparent = imagecolorallocatealpha($output, 0, 0, 0, 127);
-			//filling created image with transparent color
-			imagefill($output, 0, 0, $transparent);			
-			//copy source to destination
-			imagecopyresampled( $output, $source,  0, 0, 0, 0, 
-								$width, $height, $width, $height);			
-			//let's make watermark 1/4 of image size
-			$wanted_width = round($width/4);
-			$wanted_height = round($height/4);
-			if(($watermarkWidth/$wanted_width) < ($watermarkHeight/$wanted_height))
-			{
-				//resize by height
-				$wanted_width = ($watermarkWidth*$wanted_height)/$watermarkHeight;
-			}
-			else
-			{
-				//resize by width
-				$wanted_height = ($watermarkHeight*$wanted_width)/$watermarkWidth;
-			}
-			//bottom right
-			$dst_x = $width - $padding - $wanted_width;
-			$dst_y = $height-$padding-$wanted_height;
-			//copy watermark
-			imagecopyresampled( $output, $watermarkSource,  $dst_x, $dst_y, 0, 0, 
-								$wanted_width, $wanted_height, $watermarkWidth, $watermarkHeight);
-			$func = IMAGE.$ext;
-			$func($output, $file); 
-
-			$this->db->execute($query, array($url,$file,time()));
 			
+			try {
+				$func = "imagecreatefrom".$ext;
+				$source = $func($tempFile);
+				//create output resource
+				$output = imagecreatetruecolor($width, $height);
+				//to preserve PNG transparency
+				//saving all full alpha channel information
+				imagesavealpha($output, true);
+				//setting completely transparent color
+				$transparent = imagecolorallocatealpha($output, 0, 0, 0, 127);
+				//filling created image with transparent color
+				imagefill($output, 0, 0, $transparent);			
+				//copy source to destination
+				imagecopyresampled( $output, $source,  0, 0, 0, 0, 
+									$width, $height, $width, $height);			
+				//let's make watermark 1/4 of image size
+				$wanted_width = round($width/4);
+				$wanted_height = round($height/4);
+				if(($watermarkWidth/$wanted_width) < ($watermarkHeight/$wanted_height))
+				{
+					//resize by height
+					$wanted_width = ($watermarkWidth*$wanted_height)/$watermarkHeight;
+				}
+				else
+				{
+					//resize by width
+					$wanted_height = ($watermarkHeight*$wanted_width)/$watermarkWidth;
+				}
+				//bottom right
+				$dst_x = $width - $padding - $wanted_width;
+				$dst_y = $height-$padding-$wanted_height;
+				//copy watermark
+				imagecopyresampled( $output, $watermarkSource,  $dst_x, $dst_y, 0, 0, 
+									$wanted_width, $wanted_height, $watermarkWidth, $watermarkHeight);
+				$func = IMAGE.$ext;
+				$func($output, $file); 
+			}
+			catch (Exception $e)
+			{
+			}
+
 			// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
 			error_reporting(E_ERROR | E_PARSE);
 			unlink($tempFile);	
@@ -524,8 +552,8 @@ class JApplication {
 	public function clear_csv(){ $this->clear_table(TABLE_CSV); }
 	public function clear_xls(){ $this->clear_table(TABLE_XLS); }
 	public function clear_url(){ $this->clear_table(TABLE_URL); }
-	public function clear_page(){ $this->clear_table(TABLE_PAGE); }
-	public function clear_image(){ $this->clear_table(TABLE_IMAGE); }
+	public function clear_page(){ $this->clear_table(TABLE_PAGE_DOWNLOAD_QUEUE); }
+	public function clear_image(){ $this->clear_table(TABLE_IMAGE_DOWNLOAD_QUEUE); }
 	public function clear_magento_product(){ $this->clear_table(TABLE_MAGENTO_PRODUCT); }
 	public function clear_magento_category(){ $this->clear_table(TABLE_MAGENTO_CATEGORY); }
 	public function clear_insales_product(){ $this->clear_table(TABLE_INSALES_PRODUCT); }
@@ -537,9 +565,11 @@ class JApplication {
 		$this->db->connect();
 		$queries = array();
 		foreach(array(
-			TABLE_INSALES_COLLECTION_QUEUE,
-			TABLE_INSALES_PRODUCT_QUEUE,
-			TABLE_INSALES_IMAGE_QUEUE
+			TABLE_INSALES_COLLECTION,
+			TABLE_INSALES_PRODUCT,
+			TABLE_INSALES_COLLECTION_UPLOAD_QUEUE,
+			TABLE_INSALES_PRODUCT_UPLOAD_QUEUE,
+			TABLE_INSALES_IMAGE_UPLOAD_QUEUE
 			) as $table) $queries[]='TRUNCATE ' . $this->config->dbprefix . $table;
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
@@ -553,9 +583,12 @@ class JApplication {
 		$this->db->connect();
 		$queries = array();
 		foreach(array(
-			TABLE_MAGENTO_COLLECTION_QUEUE,
-			TABLE_MAGENTO_PRODUCT_QUEUE,
-			TABLE_MAGENTO_IMAGE_QUEUE
+			TABLE_MAGENTO_PRODUCT,
+			TABLE_MAGENTO_CATEGORY,
+			TABLE_MAGENTO_PRODUCT_DOWNLOAD_QUEUE,
+			TABLE_MAGENTO_CATEGORY_UPLOAD_QUEUE,
+			TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE,
+			TABLE_MAGENTO_IMAGE_UPLOAD_QUEUE
 			) as $table) $queries[]='TRUNCATE ' . $this->config->dbprefix . $table;
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
@@ -699,69 +732,18 @@ class JApplication {
 		set_time_limit(0);
 		$this->db->connect();
 
-		$addr = explode('/', $this->config->imagehost);
-				
-		$queries = array();
-		
-		// Очистка временных таблиц
-		foreach(array(TABLE_XLS) as $table) $queries[] = 'TRUNCATE ' . $this->config->dbprefix . $table;
-		
-		$result = $this->db->multi_query(implode(';',$queries));
-		$this->db->free_multi_result($result);
-				
-		// Загрузка xls файла
-		$type = explode(".", $this->config->xls);
-		$ext = strtolower($type[count($type)-1]);
-		$tempFile = $this->config->tempxlsfilename . getmypid() . '.' . $ext;
-		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
-		error_reporting(E_ERROR | E_PARSE);
-		unlink($tempFile);	
-		
-		// Загрузка и сохранение файла на диске
-		file_put_contents($tempFile, file_get_contents($this->config->xls));
-		
-		$inputFileType = PHPExcel_IOFactory::identify($tempFile); 
-		$reader = PHPExcel_IOFactory::createReader($inputFileType);
-		$excel = $reader->load($tempFile);
-		$sheet = $excel->getActiveSheet();
-		$outline = array_fill(0,10,0);
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xls_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xls_fields),'?')) . ')';
-		foreach($sheet->getRowIterator() as $rowIterator){
-			$row = $rowIterator->getRowIndex();
-			$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
-			$values = array(); foreach($this->config->xls_fields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
-			$this->db->execute($query,$values);
-		}
-		// Удаление строк с пустой ценой
-		$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_XLS . ' WHERE Column11=""');
-		// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
-		error_reporting(E_ERROR | E_PARSE);
-		unlink($tempFile);	
-
-		// http://stackoverflow.com/questions/16251625/how-to-create-and-download-a-csv-file-from-php-script
-		$file = fopen($this->config->csv,"w");
-		// http://www.skoumal.net/en/making-utf-8-csv-excel
-		//add BOM to fix UTF-8 in Excel
-		fputs($file, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
-		// The fputcsv() function formats a line as CSV and writes it to an open file.
-		$headers = array(); foreach($this->config->csv_fields as $field) $headers[] = $field[1];
-		fputcsv($file,$headers,';'); // Добавляем строку с заголовками колонок
-		$where = array(); foreach($this->config->csv_joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csv_join_type . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where));
-		while($row=$this->db->fetch_row($result)){
-			for($i = 1; $i <= 6; $i++) if($row[IMAGE . $i]) {
-				$addr[count($addr) - 1] =  $row[IMAGE . $i];
-				$row[IMAGE . $i] = implode('/', $addr);
-			}
-			$values = array(); foreach($this->config->csv_fields as $field) $values[] = $field[2]?$row[$field[2]]:'';
-			// The fputcsv() function formats a line as CSV and writes it to an open file.
-		  	fputcsv($file,$values,';');
-
-		}
+		$result = $this->db->query('SELECT MAX(' . ID . ') FROM ' . $this->config->dbprefix . TABLE_TASK_QUEUE);
+		$taskId = $this->db->fetch_single($result); $taskId=$taskId?$taskId+1:1;
 		$this->db->free_result($result);
+		$columns = array(ID,CLAZZ,METHOD);
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_TASK_QUEUE . '(' . implode(',',$columns) . ') VALUES (' . implode(',',array_fill(0,count($columns),'?')) . ')';
+		$this->db->execute($query,array($taskId++,APPLICATION,'clear_xls'));
+		$this->db->execute($query,array($taskId++,APPLICATION,'clear_csv'));
+		$this->db->execute($query,array($taskId++,APPLICATION,'import_xls'));
+		$this->db->execute($query,array($taskId++,APPLICATION,'update_csv'));
+		$this->db->execute($query,array($taskId++,APPLICATION,'export_csv'));
+
 		$this->db->disconnect();
-		fclose($file);
-		
 		$duration = microtime(true) - $start;
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
@@ -861,5 +843,40 @@ class JApplication {
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 		// http://stackoverflow.com/questions/486181/php-suppress-output-within-a-function
 		ob_end_clean();
+	}
+	
+	public function cron(){
+		$start = microtime(true);
+		set_time_limit(0);
+
+		$this->db->connect();		
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_TASK_QUEUE . ' ORDER BY ' . ID);
+		$rows = $this->db->fetch_all_rows($result);
+		$this->db->free_result($result);
+		$this->db->disconnect();
+
+		$query = 'DELETE FROM ' . $this->config->dbprefix . TABLE_TASK_QUEUE . ' WHERE ' . ID . '=?';
+		foreach($rows as $row){
+			$id = $row[ID];
+			$clazz = $row[CLAZZ];
+			$method = $row[METHOD];
+			try
+			{
+				$instance = new $clazz();
+				$instance->$method();
+			}
+			catch (Exception $e)
+			{
+				var_dump($e);
+			}
+			$values = array($id); 
+			echo "<pre>$clazz $method complite.</pre>";
+			$this->db->connect();		
+			$this->db->execute($query,$values);
+			$this->db->disconnect();
+		}
+
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
 }

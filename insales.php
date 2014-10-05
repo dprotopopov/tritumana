@@ -119,7 +119,7 @@ class InSales {
 		$my_insales_domain = $this->config->my_insales_domain;
 		$api_key = $this->config->insales_api_key;
 		$password = $this->config->insales_password;
-		$root_collection_id = $this->config->insales_root_collection_id;
+		$root_collection_id = $this->config->insales_root_collection_id?$this->config->insales_root_collection_id:0;
 		
 		$insales_api = insales_api_client($my_insales_domain, $api_key, $password);
 	
@@ -160,36 +160,8 @@ class InSales {
 		set_time_limit(0);
 		$this->db->connect();
 
-		$my_insales_domain = $this->config->my_insales_domain;
-		$api_key = $this->config->insales_api_key;
-		$password = $this->config->insales_password;
-		
-		$insales_api = insales_api_client($my_insales_domain, $api_key, $password);
-	
-		$per_page = $this->config->insalesperpage;
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT . '(' . SOURCE . ',' . implode(',',array_keys($this->config->insales_product_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->insales_product_fields)+1,'?')) . ')';
-		for($page=1;true;$page++) {
-			try
-			{
-				$products = $insales_api('GET','/admin/products.json?page=' . $page . '&per_page=' . $per_page);
-				if(!count($products)) break;
-				
-				foreach($products as $product){
-					$source = object_to_array($product);
-					$values = array(json_encode($source)); 
-					foreach($this->config->insales_product_fields as $productfield) $values[] = eval('return $source["' . implode('"]["', explode('/', $productfield[1])) . '"];');
-					$this->db->execute($query,$values);
-				}
-			}
-			catch (InsalesApiException $e)
-			{
-				var_dump($e);
-			}
-			catch (InsalesCurlException $e)
-			{
-				var_dump($e);
-			}	
-		}
+		// Инициализация загрузки товаров из InSales
+		$this->db->execute('REPLACE ' . $this->config->dbprefix . TABLE_SETTINGS . '(' . NAME . ',' . VALUE . ') VALUES ("insales_next_page","1")');
 
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
@@ -201,31 +173,23 @@ class InSales {
 		set_time_limit(0);
 		$this->db->connect();
 		
-		$root_collection_id = $this->config->insales_root_collection_id||0;
+		$root_collection_id = $this->config->insales_root_collection_id?$this->config->insales_root_collection_id:0;
 
 		$queries = array();
-		$queries[] = 'SELECT DISTINCT ' . $root_collection_id . ' AS ' . implode('_',array(PARENT,ID)) . ',' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . ID . ', Value2 AS ' . TITLE . ' FROM ' . $this->config->dbprefix . TABLE_CSV . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . CHILD . ' ON Value2=' . CHILD . '.' . implode('_',array(COLLECTION,TITLE)) . ' WHERE (' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL)'; 
-		for($i = 2; $i < 5 ; $i++) $queries[] = 'SELECT DISTINCT ' . PARENT . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . implode('_',array(PARENT,ID)) . ',' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . ID . ', Value' . ($i + 1) . ' AS ' . TITLE . ' FROM ' . $this->config->dbprefix . TABLE_CSV . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . PARENT . ' ON Value' . $i . '=' . PARENT . '.' . implode('_',array(COLLECTION,TITLE)) . '  LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . CHILD . ' ON Value' . ($i + 1) . '=' . CHILD . '.' . implode('_',array(COLLECTION,TITLE)) . ' WHERE (NOT ' . PARENT . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL) AND (' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL)'; 
+		$queries[] = 'SELECT DISTINCT ' . $root_collection_id . ' AS ' . implode('_',array(PARENT,ID)) . ',' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . implode('_',array(CHILD,ID)) . ', Value2 AS ' . TITLE . ' FROM ' . $this->config->dbprefix . TABLE_CSV . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . CHILD . ' ON Value2=' . CHILD . '.' . implode('_',array(COLLECTION,TITLE)) . ' WHERE (' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL)'; 
+		for($i = 2; $i < 5 ; $i++) $queries[] = 'SELECT DISTINCT ' . PARENT . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . implode('_',array(PARENT,ID)) . ',' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . implode('_',array(CHILD,ID)) . ', Value' . ($i + 1) . ' AS ' . TITLE . ' FROM ' . $this->config->dbprefix . TABLE_CSV . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . PARENT . ' ON Value' . $i . '=' . PARENT . '.' . implode('_',array(COLLECTION,TITLE)) . '  LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . CHILD . ' ON Value' . ($i + 1) . '=' . CHILD . '.' . implode('_',array(COLLECTION,TITLE)) . ' WHERE (NOT ' . PARENT . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL) AND (' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL)'; 
 		$result = $this->db->query(implode(' UNION ',$queries));
 		$rows = $this->db->fetch_all_rows($result);
 		$this->db->free_result($result);
 		$columns = array(METHOD,PATH,PARAMS,STARTED,implode('_',array(COLLECTION,TITLE))); 
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION_QUEUE . '('. implode(',',$columns) . ') VALUES ('. implode(',',array_fill(0,count($columns),'?')) . ')';
-		foreach($rows as $row) 
-			if(($row[implode('_',array(PARENT,ID))])&&(!$row[ID])){
-				$collection = array(implode('_',array(PARENT,ID))=>$row[implode('_',array(PARENT,ID))], TITLE=>$row[TITLE]);
-				$method = 'POST';
-				$path = '/admin/collections.json';
-				$values = array($method,$path,json_encode($collection),time(),$row[TITLE]);
-				$this->db->execute($query,$values);
-			}
-			else if((!$row[implode('_',array(PARENT,ID))])){
-				$collection = array(implode('_',array(PARENT,ID))=>$this->config->insales_root_collection_id, TITLE=>$row[TITLE]);
-				$method = 'POST';
-				$path = '/admin/collections.json';
-				$values = array($method,$path,json_encode($collection),time(),$row[TITLE]);
-				$this->db->execute($query,$values);
-			}
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION_UPLOAD_QUEUE . '('. implode(',',$columns) . ') VALUES ('. implode(',',array_fill(0,count($columns),'?')) . ')';
+		foreach($rows as $row) if(($row[implode('_',array(PARENT,ID))])&&(!$row[implode('_',array(CHILD,ID))])){
+			$collection = array(implode('_',array(PARENT,ID))=>$row[implode('_',array(PARENT,ID))], TITLE=>$row[TITLE]);
+			$method = 'POST';
+			$path = '/admin/collections.json';
+			$values = array($method,$path,json_encode($collection),time(),$row[TITLE]);
+			$this->db->execute($query,$values);
+		}
 				
 		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION);
 		$dictionary = array();	while($row=$this->db->fetch_row($result)) $dictionary[$row[implode('_',array(COLLECTION,TITLE))]] = $row[implode('_',array(COLLECTION,ID))];			
@@ -240,8 +204,8 @@ class InSales {
 		$rows = $this->db->fetch_all_rows($result);
 		$this->db->free_result($result);
 		$insaleskeys = array_merge(array_keys($this->config->insales_product_joins),array_values($this->config->insales_product_joins));
-		$columns = array(METHOD,PATH,PARAMS,STARTED,ID); for($i = 1; $i <= 6; $i++) $columns[] = IMAGE . $i;
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_QUEUE . '('. implode(',',$columns) . ',' . implode(',',$insaleskeys) . ') VALUES ('. implode(',',array_fill(0,count($insaleskeys)+count($columns),'?')) . ')';
+		$columns = array(METHOD,PATH,PARAMS,STARTED,ID); for($i = 1; $i <= 6; $i++) $columns[] = implode('',array(IMAGE,$i));
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_UPLOAD_QUEUE . '('. implode(',',$columns) . ',' . implode(',',$insaleskeys) . ') VALUES ('. implode(',',array_fill(0,count($insaleskeys)+count($columns),'?')) . ')';
 		foreach($rows as $row){
 //		b.	В конфиге должна быть возможность указать, какие поля обновлять для карточки товара (по-умолчанию все отключены, 
 //		если например ставлю в true на обновление стоимость, то скрипт обновляет только это поле)
@@ -251,7 +215,7 @@ class InSales {
 					$row[$key] = $row[$productfield[2]];
 					eval('$source["' . implode('"]["', explode('/', $productfield[4])) . '"] = $row[$productfield[2]];');
 				}
-				else if($productfield[2]&&$row[$productfield[2]]&&$productfield[3]&&$row[ID]) { // Для старых изменять если
+				else if($productfield[2]&&$row[$productfield[2]]&&($productfield[3]&&$row[ID]||!$row[$key])) { // Для старых изменять если
 					$row[$key] = $row[$productfield[2]];
 					eval('$source["' . implode('"]["', explode('/', $productfield[1])) . '"] = $row[$productfield[2]];');
 				}
@@ -269,7 +233,7 @@ class InSales {
 			$path = $row[ID]?'/admin/products/' . $row[ID] . '.json':'/admin/products.json';
 			$id = $row[ID]?$row[ID]:0;
 			$values = array($method,$path,json_encode($source),time(),$id);
-			for($i = 1; $i <= 6; $i++) $values[] = $row[IMAGE . $i];
+			for($i = 1; $i <= 6; $i++) $values[] = $row[implode('',array(IMAGE,$i))];
 			foreach($insaleskeys as $key) $values[]=$row[$key];
 			$this->db->execute($query,$values);
 		}
@@ -278,6 +242,24 @@ class InSales {
 		$duration = microtime(true) - $start;
 		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
 	}
+	
+	public function clear(){
+		$start = microtime(true);
+		$this->db->connect();
+		// Очистка временных таблиц
+		$queries = array();
+		foreach(array(
+			TABLE_INSALES_COLLECTION_UPLOAD_QUEUE,
+			TABLE_INSALES_PRODUCT_UPLOAD_QUEUE,
+			TABLE_INSALES_IMAGE_UPLOAD_QUEUE
+			) as $table) $queries[] = 'TRUNCATE ' . $this->config->dbprefix . $table;		
+		$result = $this->db->multi_query(implode(';',$queries));
+		$this->db->free_multi_result($result);
+		$this->db->disconnect();
+		$duration = microtime(true) - $start;
+		echo "<pre>Execution time: <b>$duration</b> sec.</pre>";
+	}
+		
 	/*
 		4.	Сделать скрипт обновления наличия и стоимости товарных позиций в интернет магазине
 		5.	Работает через API InSales: https://wiki.insales.ru/wiki/%D0%9A%D0%B0%D0%BA_%D0%B8%D0%BD%D1%82%D0%B5%D0%B3%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F_%D1%81_InSales 
@@ -298,73 +280,14 @@ class InSales {
 		$start = microtime(true);
 		$this->db->connect();
 		
-		$my_insales_domain = $this->config->my_insales_domain;
-		$api_key = $this->config->insales_api_key;
-		$password = $this->config->insales_password;
-		$root_collection_id = $this->config->insales_root_collection_id||0;
-		
-		$insales_api = insales_api_client($my_insales_domain, $api_key, $password);
-	
-		// Очистка временных таблиц
-		$queries = array();
-		foreach(array(
-			TABLE_INSALES_COLLECTION,
-			TABLE_INSALES_PRODUCT,
-			TABLE_XLS,
-			TABLE_CSV,
-			TABLE_INSALES_PRODUCT_QUEUE,
-			TABLE_INSALES_IMAGE_QUEUE
-			) as $table) $queries[] = 'TRUNCATE ' . $this->config->dbprefix . $table;		
-		$result = $this->db->multi_query(implode(';',$queries));
-		$this->db->free_multi_result($result);
-		
-		// Инициализация загрузки товаров из InSales
-		$this->db->execute('REPLACE ' . $this->config->dbprefix . TABLE_SETTINGS . '(' . NAME . ',' . VALUE . ') VALUES ("insales_next_page","1")');
-
-		/*
-			Получение списка категорий
-			Зарос: GET /admin/collections.xml
-		*/
-		try
-		{
-			$collections = $insales_api('GET','/admin/collections.json');
-			$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . '(' . implode('_',array(COLLECTION,ID)) . ',' . implode('_',array(COLLECTION,TITLE)) . ') VALUES (?,?)';
-			foreach($collections as $collection){
-				$this->db->execute($query,array($collection[ID],$collection[TITLE]));
-			}		
-		}
-		catch (InsalesApiException $e)
-		{
-			var_dump($e);
-		}
-		catch (InsalesCurlException $e)
-		{
-			var_dump($e);
-		}	
-
-		$queries = array();
-		$queries[] = 'SELECT DISTINCT ' . $root_collection_id . ' AS ' . implode('_',array(PARENT,ID)) . ',' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . ID . ', Value2 AS ' . TITLE . ' FROM ' . $this->config->dbprefix . TABLE_CSV . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . CHILD . ' ON Value2=' . CHILD . '.' . implode('_',array(COLLECTION,TITLE)) . ' WHERE (' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL)'; 
-		for($i = 2; $i < 5 ; $i++) $queries[] = 'SELECT DISTINCT ' . PARENT . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . implode('_',array(PARENT,ID)) . ',' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' AS ' . ID . ', Value' . ($i + 1) . ' AS ' . TITLE . ' FROM ' . $this->config->dbprefix . TABLE_CSV . ' LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . PARENT . ' ON Value' . $i . '=' . PARENT . '.' . implode('_',array(COLLECTION,TITLE)) . '  LEFT JOIN ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION . ' AS ' . CHILD . ' ON Value' . ($i + 1) . '=' . CHILD . '.' . implode('_',array(COLLECTION,TITLE)) . ' WHERE (NOT ' . PARENT . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL) AND (' . CHILD . '.' . implode('_',array(COLLECTION,ID)) . ' IS NULL)'; 
-		$result = $this->db->query(implode(' UNION ',$queries));
-		$rows = $this->db->fetch_all_rows($result);
+		$result = $this->db->query('SELECT MAX(' . ID . ') FROM ' . $this->config->dbprefix . TABLE_TASK_QUEUE);
+		$taskId = $this->db->fetch_single($result); $taskId=$taskId?$taskId+1:1;
 		$this->db->free_result($result);
-		$columns = array(METHOD,PATH,PARAMS,STARTED,implode('_',array(COLLECTION,TITLE))); 
-		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION_QUEUE . '('. implode(',',$columns) . ') VALUES ('. implode(',',array_fill(0,count($columns),'?')) . ')';
-		foreach($rows as $row) 
-			if(($row[implode('_',array(PARENT,ID))])&&(!$row[ID])){
-				$collection = array(implode('_',array(PARENT,ID))=>$row[implode('_',array(PARENT,ID))], TITLE=>$row[TITLE]);
-				$method = 'POST';
-				$path = '/admin/collections.json';
-				$values = array($method,$path,json_encode($collection),time(),$row[TITLE]);
-				$this->db->execute($query,$values);
-			}
-			else if((!$row[implode('_',array(PARENT,ID))])){
-				$collection = array(implode('_',array(PARENT,ID))=>$this->config->insales_root_collection_id, TITLE=>$row[TITLE]);
-				$method = 'POST';
-				$path = '/admin/collections.json';
-				$values = array($method,$path,json_encode($collection),time(),$row[TITLE]);
-				$this->db->execute($query,$values);
-			}
+		$columns = array(ID,CLAZZ,METHOD);
+		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_TASK_QUEUE . '(' . implode(',',$columns) . ') VALUES (' . implode(',',array_fill(0,count($columns),'?')) . ')';
+		$this->db->execute($query,array($taskId++,INSALES,'clear'));
+		$this->db->execute($query,array($taskId++,INSALES,'category'));
+		$this->db->execute($query,array($taskId++,INSALES,'product'));
 		
 		$this->db->disconnect();
 		$duration = microtime(true) - $start;
@@ -379,9 +302,9 @@ class InSales {
 		// Удаляем устаревшие запросы к InSales
 		$queries = array();
 		foreach(array(
-			TABLE_INSALES_COLLECTION_QUEUE,
-			TABLE_INSALES_PRODUCT_QUEUE,
-			TABLE_INSALES_IMAGE_QUEUE
+			TABLE_INSALES_COLLECTION_UPLOAD_QUEUE,
+			TABLE_INSALES_PRODUCT_UPLOAD_QUEUE,
+			TABLE_INSALES_IMAGE_UPLOAD_QUEUE
 			) as $table) $queries[]='DELETE FROM ' . $this->config->dbprefix . $table . ' WHERE ' . STARTED . '<' . (time() - $this->config->insalesexpiretime);
 		$result = $this->db->multi_query(implode(';',$queries));
 		$this->db->free_multi_result($result);
@@ -395,136 +318,50 @@ class InSales {
 		$result = $this->db->query('SELECT ' . VALUE . ' FROM ' . $this->config->dbprefix . TABLE_SETTINGS . ' WHERE ' . NAME . '="insales_next_page"');
 		$page = $this->db->num_rows($result)?$this->db->fetch_single($result):0;
 		$this->db->free_result($result);
-		if($page){
-			try
-			{
-				$count = $this->config->insalespagecount;
-				$per_page = $this->config->insalesperpage;
-				for($i = 0; $i < $count; $i++) {
-					$products = $insales_api('GET','/admin/products.json?page=' . $page . '&per_page=' . $per_page);
-					if(count($products)) { // Если не все товары загружены из InSales				
-						$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT . '(' . SOURCE . ',' . implode(',',array_keys($this->config->insales_product_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->insales_product_fields)+1,'?')) . ')';
-						foreach($products as $product){
-							$source = object_to_array($product);
-							$values = array(json_encode($source)); 
-							foreach($this->config->insales_product_fields as $productfield) $values[] = eval('return $source["' . implode('"]["', explode('/', $productfield[1])) . '"];');
-							$this->db->execute($query,$values);
-						}
-						$page++;
-						$this->db->execute('REPLACE ' . $this->config->dbprefix . TABLE_SETTINGS . '(' . NAME . ',' . VALUE . ') VALUES ("insales_next_page","' . $page . '")');
-					}
-					else { // Если все товары загружены из InSales	
-						
-						$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_COLLECTION);
-						$dictionary = array();	while($row=$this->db->fetch_row($result)) $dictionary[$row[implode('_',array(COLLECTION,TITLE))]] = $row[implode('_',array(COLLECTION,ID))];			
-						$this->db->free_result($result);
-						
-						// Загрузка xls файла
-						$type = explode(".", $this->config->xls);
-						$ext = strtolower($type[count($type)-1]);
-						$tempFile = $this->config->tempxlsfilename . getmypid() . '.' . $ext;
-						// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
-						error_reporting(E_ERROR | E_PARSE);
-						unlink($tempFile);	
-						
-						// Загрузка и сохранение файла на диске
-						file_put_contents($tempFile, file_get_contents($this->config->xls));
-						
-						$inputFileType = PHPExcel_IOFactory::identify($tempFile); 
-						$reader = PHPExcel_IOFactory::createReader($inputFileType);
-						$excel = $reader->load($tempFile);
-						$sheet = $excel->getActiveSheet();
-						$outline = array_fill(0,10,0);
-						$this->db->connect();
-						$query = 'REPLACE ' . $this->config->dbprefix . TABLE_XLS . '(' . implode(',',array_keys($this->config->xls_fields)) . ') VALUES (' . implode(',',array_fill(0,count($this->config->xls_fields),'?')) . ')';
-						foreach($sheet->getRowIterator() as $rowIterator){
-							$row = $rowIterator->getRowIndex();
-							$outline[$sheet->getRowDimension($row)->getOutlineLevel()]=$row;
-							$values = array(); foreach($this->config->xls_fields as $xlsfield) $values[] = trim(eval($xlsfield[1]));
-							$this->db->execute($query,$values);
-						}
-						// Удаление строк с пустой ценой
-						$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_XLS . ' WHERE Column11=""');
-						// http://stackoverflow.com/questions/1987579/how-to-remove-warning-messages-in-php
-						error_reporting(E_ERROR | E_PARSE);
-						unlink($tempFile);	
-				
-						// Обновление записей в таблице
-						$queries = array();
-						$csv_fields = array(); foreach($this->config->csv_fields as $csvfield=>$values) if($values[2]) $csv_fields[$csvfield]=$values[2];
-						$where = array(); foreach($this->config->csv_joins as $key=>$value) $where[] = TABLE_XLS . '.' . $key . '=' . TABLE_URL . '.' .$value;
-						$queries[] = 'REPLACE ' . $this->config->dbprefix . TABLE_CSV . '(' . implode(',', array_keys($csv_fields)) . ') SELECT ' . implode(',', array_values($csv_fields)) . ' FROM ' . $this->config->dbprefix . TABLE_XLS . ' AS ' . TABLE_XLS . ' ' . $this->config->csv_join_type . ' ' . $this->config->dbprefix . TABLE_URL . ' AS ' . TABLE_URL . ' ON ' . implode(' AND ', $where);
-						$queries[] = 'DELETE FROM ' . $this->config->dbprefix . TABLE_CSV . ' WHERE Value12="0"';
-						$result = $this->db->multi_query(implode(';',$queries));
-						$this->db->free_multi_result($result);
-	
-						$insales_product_template = $this->config->insales_product_template;
-						$where = array(); foreach($this->config->insales_product_joins as $key=>$value) $where[] = TABLE_INSALES_PRODUCT . '.' . $key . '=' . TABLE_CSV . '.' .$value;
-						$queries = array();
-						foreach($this->config->product_join_types as $productjointype)
-							$queries[] ='SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT . ' AS ' . TABLE_INSALES_PRODUCT . ' ' . $productjointype . ' ' . $this->config->dbprefix . TABLE_CSV . ' AS ' . TABLE_CSV . ' ON ' . implode(' AND ', $where);
-						$result = $this->db->query(implode(' UNION ',$queries));
-						$rows = $this->db->fetch_all_rows($result);
-						$this->db->free_result($result);
-						$insaleskeys = array_merge(array_keys($this->config->insales_product_joins),array_values($this->config->insales_product_joins));
-						$columns = array(METHOD,PATH,PARAMS,STARTED,ID); for($i = 1; $i <= 6; $i++) $columns[] = IMAGE . $i;
-						$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_QUEUE . '('. implode(',',$columns) . ',' . implode(',',$insaleskeys) . ') VALUES ('. implode(',',array_fill(0,count($insaleskeys)+count($columns),'?')) . ')';
-						foreach($rows as $row){
-				//		b.	В конфиге должна быть возможность указать, какие поля обновлять для карточки товара (по-умолчанию все отключены, 
-				//		если например ставлю в true на обновление стоимость, то скрипт обновляет только это поле)
-							$source = array_merge_recursive ($row[SOURCE]?object_to_array(json_decode($row[SOURCE])):array(),object_to_array(eval($insales_product_template[$row[ID]?'update':'insert'])));
-							foreach($this->config->insales_product_fields as $key=>$productfield) {
-								if($productfield[2]&&$row[$productfield[2]]&&!$row[ID]) { // Для новых добавлять
-									$row[$key] = $row[$productfield[2]];
-									eval('$source["' . implode('"]["', explode('/', $productfield[4])) . '"] = $row[$productfield[2]];');
-								}
-								else if($productfield[2]&&$row[$productfield[2]]&&$productfield[3]&&$row[ID]) { // Для старых изменять если
-									$row[$key] = $row[$productfield[2]];
-									eval('$source["' . implode('"]["', explode('/', $productfield[1])) . '"] = $row[$productfield[2]];');
-								}
-								else if($row[$key]) // Иначе оставлять прежним
-									eval('$source["' . implode('"]["', explode('/', $productfield[1])) . '"] = $row[$key];');
-							}
-							eval('$source["is_hidden"] = !($row["' . implode('"]||$row["',array_values($this->config->insales_product_joins)) . '"]);');
-							if($this->config->insales_product_fields['collectionId'][3])
-								for($i = 5; $i >= 2; $i--) if(isset($dictionary[$row["Value" . $i]])) {
-									$row['collectionId'] = $dictionary[$row["Value" . $i]];
-									eval('$source["' . implode('"]["', explode('/', $this->config->insales_product_fields['collectionId'])) . '"] = $row["collectionId"];');
-									break;
-								}
-							$method = $row[ID]?'PUT':'POST';
-							$path = $row[ID]?'/admin/products/' . $row[ID] . '.json':'/admin/products.json';
-							$id = $row[ID]?$row[ID]:0;
-							$values = array($method,$path,json_encode($source),time(),$id);
-							for($i = 1; $i <= 6; $i++) $values[] = $row[IMAGE . $i];
-							foreach($insaleskeys as $key) $values[]=$row[$key];
-							$this->db->execute($query,$values);
-						}
-						$this->db->execute('DELETE FROM ' . $this->config->dbprefix . TABLE_SETTINGS . ' WHERE ' . NAME . '="insales_next_page"');
-						break;
-					}
+		if($page) try
+		{
+			$count = $this->config->insalespagecount;
+			$per_page = $this->config->insalesperpage;
+			for($i = 0; $i < $count; $i++) {
+				$products = $insales_api('GET','/admin/products.json?page=' . $page . '&per_page=' . $per_page);
+				if(!count($products)) { 
+					$page = 0;
+					break; 
 				}
-				return;	
+				$columns = array_merge(array(SOURCE),array_keys($this->config->insales_product_fields));
+				$query = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT . '(' . implode(',',$columns) . ') VALUES (' . implode(',',array_fill(0,count($columns),'?')) . ')';
+				foreach($products as $product){
+					$source = object_to_array($product);
+					$values = array(json_encode($source)); 
+					foreach($this->config->insales_product_fields as $productfield) $values[] = eval('return $source["' . implode('"]["', explode('/', $productfield[1])) . '"];');
+					$this->db->execute($query,$values);
+				}
+				$page++;
 			}
-			catch (InsalesApiException $e)
-			{
-				var_dump($e);
-			}
-			catch (InsalesCurlException $e)
-			{
-				var_dump($e);
-			}
+			$this->db->execute('REPLACE ' . $this->config->dbprefix . TABLE_SETTINGS . '(' . NAME . ',' . VALUE . ') VALUES ("insales_next_page","' . $page . '")');
 		}
-		
+		catch (InsalesApiException $e)
+		{
+			var_dump($e);
+		}
+		catch (InsalesCurlException $e)
+		{
+			var_dump($e);
+		}	
+			
 		// обработка очереди картинок
 		$count = ($this->config->insalescronlimit);
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_IMAGE_QUEUE . ' ORDER BY ' . STARTED . ' LIMIT ' . $count);
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_IMAGE_UPLOAD_QUEUE . ' ORDER BY ' . STARTED . ' LIMIT ' . $count);
 		$rows = $this->db->fetch_all_rows($result);
 		$this->db->free_result($result);
 		$insaleskeys = array_merge(array_keys($this->config->insales_product_joins),array_values($this->config->insales_product_joins));
-		$query = 'DELETE FROM ' . $this->config->dbprefix . TABLE_INSALES_IMAGE_QUEUE . ' WHERE image=?';
+		$query = 'DELETE FROM ' . $this->config->dbprefix . TABLE_INSALES_IMAGE_UPLOAD_QUEUE . ' WHERE image=?';
 		foreach($rows as $row){
+			
+			// помечаем сразу как обработанный, чтобы не зависать на одной ошибке
 			$values = array($row[IMAGE]);
+			$this->db->execute($query,$values);
+			
 			try
 			{
 				$result = $insales_api($row[METHOD], $row[PATH] , json_decode($row[PARAMS]));
@@ -537,25 +374,46 @@ class InSales {
 			{
 				var_dump($e);
 			}	
-			// Удаляем обработанные запросы к InSales
-			$this->db->execute($query,$values);
+		}
+
+		if($page) return;
+		
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_UPLOAD_QUEUE);
+		$count = $this->db->fetch_single($result);
+		$this->db->free_result($result);
+		if(!$count) {
+			$result = $this->db->query('SELECT MAX(' . ID . ') FROM ' . $this->config->dbprefix . TABLE_TASK_QUEUE);
+			$taskId = $this->db->fetch_single($result); $taskId=$taskId?$taskId+1:1;
+			$this->db->free_result($result);
+			$columns = array(ID,CLAZZ,METHOD);
+			$query = 'REPLACE ' . $this->config->dbprefix . TABLE_TASK_QUEUE . '(' . implode(',',$columns) . ') VALUES (' . implode(',',array_fill(0,count($columns),'?')) . ')';
+			$this->db->execute($query,array($taskId++,APPLICATION,'clear_xls'));
+			$this->db->execute($query,array($taskId++,APPLICATION,'clear_csv'));
+			$this->db->execute($query,array($taskId++,APPLICATION,'import_xls'));
+			$this->db->execute($query,array($taskId++,APPLICATION,'update_csv'));
+			$this->db->execute($query,array($taskId++,INSALES,'export'));
+			return;
 		}
 		
 		// Обработка очереди товаров
 		$addr = explode('/', $this->config->imagehost);
 		$count = ($this->config->insalescronlimit - count($rows));
 		$rows = array(); 
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_QUEUE . ' WHERE image1<>"" ORDER BY ' . STARTED . ' LIMIT ' . ($count-count($rows)));
-		while($row=$this->db->fetch_row($result)) $rows[] = $row;
-		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_QUEUE . ' WHERE image1="" ORDER BY ' . STARTED . ' LIMIT ' . ($count-count($rows)));
-		while($row=$this->db->fetch_row($result)) $rows[] = $row;
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_UPLOAD_QUEUE . ' WHERE image1<>"" ORDER BY ' . STARTED . ' LIMIT ' . ($count-count($rows)));
+		$rows = array_merge($rows,$this->db->fetch_all_rows($result));
+		$result = $this->db->query('SELECT * FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_UPLOAD_QUEUE . ' WHERE image1="" ORDER BY ' . STARTED . ' LIMIT ' . ($count-count($rows)));
+		$rows = array_merge($rows,$this->db->fetch_all_rows($result));
 		$this->db->free_result($result);
 		$insaleskeys = array_merge(array_keys($this->config->insales_product_joins),array_values($this->config->insales_product_joins));
 		$columns1 = array(METHOD,PATH,PARAMS,STARTED); $columns1[] = IMAGE;
-		$query = 'DELETE FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_QUEUE . ' WHERE ' . implode('=? AND ', $insaleskeys) . '=?';
-		$query1 = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_IMAGE_QUEUE . '('. implode(',',$columns1) . ') VALUES ('. implode(',',array_fill(0,count($columns1),'?')) . ')';
+		$query = 'DELETE FROM ' . $this->config->dbprefix . TABLE_INSALES_PRODUCT_UPLOAD_QUEUE . ' WHERE ' . implode('=? AND ', $insaleskeys) . '=?';
+		$query1 = 'REPLACE ' . $this->config->dbprefix . TABLE_INSALES_IMAGE_UPLOAD_QUEUE . '('. implode(',',$columns1) . ') VALUES ('. implode(',',array_fill(0,count($columns1),'?')) . ')';
 		foreach($rows as $row){
-			$values = array_map(function($key) { return $row[$key]; }, $insaleskeys);
+			
+			// помечаем сразу как обработанный, чтобы не зависать на одной ошибке
+			$values = array(); foreach($insaleskeys as $key) $values[] = $row[$key];
+			$this->db->execute($query,$values);
+			
 			try
 			{
 				$result = $insales_api($row[METHOD], $row[PATH] , json_decode($row[PARAMS]));
@@ -572,15 +430,13 @@ class InSales {
 					}
 					$images = $insales_api('GET','/admin/products/' . $productId . '/images.json');				
 				}
-				for($i = 1; $i <= 6; $i++) if($row[IMAGE . $i]&&!$images[$i-1]) {
-					$addr[count($addr) - 1] =  $row[IMAGE . $i];
+				for($i = 1; $i <= 6; $i++) if($row[implode('',array(IMAGE,$i))]&&!$images[$i-1]) {
+					$addr[count($addr) - 1] =  $row[implode('',array(IMAGE,$i))];
 					$image = array('src'=>implode('/', $addr));
 					$values1 = array('POST','/admin/products/' . $productId . '/images.json',json_encode($image),time());
-					$values1[] = $row[IMAGE . $i];
+					$values1[] = $row[implode('',array(IMAGE,$i))];
 					$this->db->execute($query1,$values1);
 				}
-				// Удаляем обработанные запросы к InSales
-				$this->db->execute($query,$values);
 			}
 			catch (InsalesApiException $e)
 			{

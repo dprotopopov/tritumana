@@ -344,6 +344,9 @@ class Magento {
 		$attributeSets = $client->call($session, 'product_attribute_set.list');
 		$attributeSet = current($attributeSets);
 
+		$result = $client->call($session, 'catalog_product_attribute_media.types', $attributeSet['set_id']);
+		$types = array(); foreach($result as $item) $types[] = $item['code'];
+
 		// Обработка очереди товаров
 		$count = ($this->config->magentocronlimit);
 		$rows = array(); 
@@ -380,7 +383,7 @@ class Magento {
 					$imageData = array(
 						'label' => $productData[NAME],
 						'position' => '1',
-						'types' => array('image','small_image','thumbnail'),
+						'types' => $types,
 						'exclude' => '0'
 					);
 					$imageFile=$row[implode('',array(IMAGE,$i))];

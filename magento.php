@@ -380,7 +380,7 @@ class Magento {
 					$imageData = array(
 						'label' => $productData[NAME],
 						'position' => '1',
-						'types' => array('thumbnail'),
+						'types' => array('image','small_image','thumbnail'),
 						'exclude' => '0'
 					);
 					$imageFile=$row[implode('',array(IMAGE,$i))];

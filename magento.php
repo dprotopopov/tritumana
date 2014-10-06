@@ -243,6 +243,7 @@ class Magento {
 		$apiUrl = $this->config->magento_api_url;
 		$apiUser = $this->config->magento_api_user;
 		$apiKey = $this->config->magento_api_key;
+		$removeMedia = $this->config->magento_remove_media;
 		
 		$client = new SoapClient($apiUrl);
 		$session = $client->login($apiUser,$apiKey);
@@ -373,7 +374,15 @@ class Magento {
 				$images = array();
 				if($row[METHOD]=='catalog_product.update') {
 					$result = $client->call($session, $row[METHOD], array($productId, $productData));
-					$images = $client->call($session, 'catalog_product_attribute_media.list', $productId);
+					$result = $client->call($session, 'catalog_product_attribute_media.list', $productId);
+					if($removeMedia) {
+						foreach($result as $image) {
+							$result = $client->call($session, 'catalog_product_attribute_media.remove', array($productId, $image['file']));
+						}
+					}
+					else {
+						$images=$result;
+					}
 				}
 				if($row[METHOD]=='catalog_product.create') {
 					$productId = $client->call($session, $row[METHOD], array('simple', $attributeSet['set_id'], $productSku, $productData));	

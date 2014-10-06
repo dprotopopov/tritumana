@@ -63,6 +63,7 @@ class JConfig {
 	public $magento_api_user = 'user';  // User в Magento
 	public $magento_api_key = '0dd445ca899ed0c1b37cc2a918a6c225';  // Access Key в Magento
 	public $magento_root_category_id = '2';  // ID of the parent category в Magento
+	public $magento_remove_media = '1'; 
 
 	// Информация о сайте-доноре
 	public $url = 'http://tursportopt.ru';	 // Адрес загружаемого сайта (сайт-донор)

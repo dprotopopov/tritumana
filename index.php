@@ -3,7 +3,7 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
-// Использлвание: cd <рабочий каталог> & php -f cron.php
+// Использлвание: cd <рабочий каталог> && php -f cron.php
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
 require_once( dirname(__FILE__) . '/insales.php' );

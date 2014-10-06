@@ -3,7 +3,7 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
-// Использование: cd <рабочий каталог> & php -f cron.php
+// Использование: cd <рабочий каталог> && php -f cron.php
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
 require_once( dirname(__FILE__) . '/insales.php' );
@@ -36,7 +36,7 @@ require_once( dirname(__FILE__) . '/factory.php' );
       <div class="panel-body">
         <p>cron.php должен быть установлен для запуска задачи по-расписанию. Он выполняет задачи парсинга страниц и загрузки картинок в соответствии с очередью ссылок.</p>
         <p>cron.php также можно открыть в браузере - его страница будет обновляться, запуская задачи парсинга сайта.</p>
-        <p>Использование: cd &lt;рабочий каталог&gt; &amp; php -f cron.php </p>
+        <p>Использование: cd &lt;рабочий каталог&gt; &amp;&amp; php -f cron.php </p>
         <p>Когда будет <br />
 Image queue: <strong>0/….</strong><br />
 Page queue: <strong>0/….</strong><br />

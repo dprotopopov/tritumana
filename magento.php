@@ -415,6 +415,20 @@ class Magento {
 			}
 		}
 		
+		$result = $this->db->query('SELECT COUNT(*) FROM ' . $this->config->dbprefix . TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE);
+		$count = $this->db->fetch_single($result);
+		$this->db->free_result($result);
+		if(!$count) {
+			$result = $this->db->query('SELECT MAX(' . ID . ') FROM ' . $this->config->dbprefix . TABLE_TASK_QUEUE);
+			$taskId = $this->db->fetch_single($result); $taskId=$taskId?$taskId+1:1;
+			$this->db->free_result($result);
+			$columns = array(ID,CLAZZ,METHOD);
+			$query = 'REPLACE ' . $this->config->dbprefix . TABLE_TASK_QUEUE . '(' . implode(',',$columns) . ') VALUES (' . implode(',',array_fill(0,count($columns),'?')) . ')';
+			$this->db->execute($query,array($taskId++,MAGENTO,'category'));
+			$this->db->execute($query,array($taskId++,MAGENTO,'product'));
+			return;
+		}
+		
 		$client->endSession($session);
 		
 		$this->db->disconnect();

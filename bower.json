@@ -20,6 +20,7 @@
     "flipclock": "https://github.com/objectivehtml/FlipClock.git#~0.6.3",
     "jquery.Element": "https://github.com/dprotopopov/jquery.Element.git",
     "slabText": "https://github.com/freqdec/slabText.git#~2.2.0",
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "joomla-platform": "https://github.com/joomla/joomla-platform.git"
   }
 }

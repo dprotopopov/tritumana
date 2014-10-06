@@ -55,3 +55,7 @@ Access Key-1  Del_ico
 7. Установка программы завершена
 
 
+cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php install.php >/dev/null 2>&1
+cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php task1.php >/dev/null 2>&1
+cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php task2.php >/dev/null 2>&1
+cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php cron.php >/dev/null 2>&1

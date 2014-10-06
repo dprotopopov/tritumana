@@ -1,0 +1,14 @@
+{
+  "name": "joomla-platform",
+  "homepage": "https://github.com/joomla/joomla-platform",
+  "_release": "10ea69dece",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "10ea69dece20f9ef1fe57f8584f2cd8e7c17ac7f"
+  },
+  "_source": "https://github.com/joomla/joomla-platform.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/joomla/joomla-platform.git",
+  "_direct": true
+}

@@ -1,3 +1,5 @@
 1.txt
 _notes/
 .vendors/
+tests/test_application/cache
+

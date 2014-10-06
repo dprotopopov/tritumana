@@ -58,7 +58,8 @@ class JDatabase {
 			$code[] = '$var'. $index .'=$params[' . $index . ']?$params[' . $index . ']:"";';
 			$index++; 
 		}
-		$code[] = '$res->bind_param("' . str_repeat('s',$index) . '",&$var' . implode(',&$var',range(0,$index-1)) . ');';
+		if (strnatcmp(phpversion(),'5.3') >= 0) $code[] = '$res->bind_param("' . str_repeat('s',$index) . '",&$var' . implode(',&$var',range(0,$index-1)) . ');';
+		if (strnatcmp(phpversion(),'5.3') < 0) $code[] = '$res->bind_param("' . str_repeat('s',$index) . '",$var' . implode(',$var',range(0,$index-1)) . ');';
 	 	if($this->config->debug) echo implode(PHP_EOL,$code);
 		if($index) eval(implode(PHP_EOL,$code));
 		$res->execute(); 	

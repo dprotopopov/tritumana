@@ -1,11 +1,7 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
 // Использование: cd <рабочий каталог> && php -f cron.php
-
-set_time_limit(60);
 
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
@@ -17,8 +13,10 @@ require_once( dirname(__FILE__) . '/factory.php' );
 	$app = JFactory::getApplication();
 	$insales = JFactory::getInSales();
 	$magento = JFactory::getMagento();
-	
-?>
+
+if (PHP_SAPI !== 'cli'):
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="Description" content="" />
@@ -59,12 +57,20 @@ Page queue: <strong>0/….</strong><br />
 <p><a href="index.php" target="_blank" class="btn btn-primary btn-lg" role="button">Learn more</a></p>
 </div>
 </div>
-<?php
-	$app->cron();		
-	$app->page_curl_cron();		
-	$app->image_curl_cron();		
-	if($config->insales_enabled) $insales->cron();		
-	if($config->magento_enabled) $magento->cron();		
-?>
 </body>
-</html>
+</html><?php  endif;
+
+    $lockFileName = 'lock.me';
+
+    if (file_exists($lockFileName)) {
+        return;
+    }
+
+    $fp = fopen($lockFileName, "w");
+    fclose($fp);
+	$app->cron();
+	$app->page_curl_cron();
+	$app->image_curl_cron();
+	if($config->insales_enabled) $insales->cron();
+	if($config->magento_enabled) $magento->cron();
+    unlink($lockFileName);

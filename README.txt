@@ -59,3 +59,6 @@ cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php instal
 cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php task1.php >/dev/null 2>&1
 cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php task2.php >/dev/null 2>&1
 cd /var/www/vrulin/data/www/tritumana.ru/tritumana-master && /usr/bin/php cron.php >/dev/null 2>&1
+
+https://github.com/dprotopopov/tritumana/archive/master.zip
+tritumana-master.zip

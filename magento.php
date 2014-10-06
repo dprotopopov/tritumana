@@ -355,7 +355,7 @@ class Magento {
 		$magentokeys = array_merge(array_keys($this->config->magento_product_joins),array_values($this->config->magento_product_joins));
 		$columns1 = array(METHOD,implode('_',array(PRODUCT,ID)),implode('_',array(PRODUCT,SKU)),implode('_',array(IMAGE,FILE)),PARAMS,STARTED,IMAGE);
 		$query = 'DELETE FROM ' . $this->config->dbprefix . TABLE_MAGENTO_PRODUCT_UPLOAD_QUEUE . ' WHERE ' . implode('=? AND ', $magentokeys) . '=?';
-		$query1 = 'REPLACE ' . $this->config->dbprefix . TABLE_MAGENTO_IMAGE_UPLOAD_QUEUE . '('. implode(',',$columns2) . ') VALUES ('. implode(',',array_fill(0,count($columns2),'?')) . ')';
+		$query1 = 'REPLACE ' . $this->config->dbprefix . TABLE_MAGENTO_IMAGE_UPLOAD_QUEUE . '('. implode(',',$columns1) . ') VALUES ('. implode(',',array_fill(0,count($columns1),'?')) . ')';
 		foreach($rows as $row){
 			
 			// помечаем сразу как обработанный, чтобы не зависать на одной ошибке

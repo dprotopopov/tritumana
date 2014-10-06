@@ -83,7 +83,7 @@ class Magento {
 		$client = new SoapClient($apiUrl);
 		$session = $client->login($apiUser,$apiKey);
 					
-		$columns=array(implode('_',array(PRODUCT,ID)),implode('_',array(PRODUCT,SKU)),STARTED);
+		$columns=array(METHOD,implode('_',array(PRODUCT,ID)),implode('_',array(PRODUCT,SKU)),STARTED);
 		$query = 'REPLACE ' . $this->config->dbprefix . TABLE_MAGENTO_PRODUCT_DOWNLOAD_QUEUE . '(' . implode(',',$columns) . ') VALUES (' . implode(',',array_fill(0,count($columns),'?')) . ')';
 		try
 		{
@@ -91,7 +91,7 @@ class Magento {
 			foreach($products as $product){
 				$productId = $product[implode('_',array(PRODUCT,ID))];
 				$productSku = $product[implode('_',array(SKU))];
-				$values = array($productId,$productSku,time()); 
+				$values = array('catalog_product.info',$productId,$productSku,time()); 
 				$this->db->execute($query,$values);
 			}
 		}

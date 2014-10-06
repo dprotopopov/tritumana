@@ -377,7 +377,7 @@ class Magento {
 					$result = $client->call($session, 'catalog_product_attribute_media.list', $productId);
 					if($removeMedia) {
 						foreach($result as $image) {
-							$result = $client->call($session, 'catalog_product_attribute_media.remove', array('product' => $productId, 'file' => $image['file']));
+							$result1 = $client->call($session, 'catalog_product_attribute_media.remove', array('product' => $productId, 'file' => $image['file']));
 						}
 					}
 					else {

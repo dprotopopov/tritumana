@@ -4,6 +4,9 @@
 //////////////////////////////////////////////////////////////////////////////
 // Разрабочик dmitry@protopopov.ru
 // Использование: cd <рабочий каталог> && php -f cron.php
+
+set_time_limit(60);
+
 require_once( dirname(__FILE__) . '/configuration.php' );
 require_once( dirname(__FILE__) . '/application.php' );
 require_once( dirname(__FILE__) . '/insales.php' );
